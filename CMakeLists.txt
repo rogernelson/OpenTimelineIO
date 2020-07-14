@@ -1,3 +1,6 @@
+
+project(OpenTimelineIO)
+
 if (WINDOWS)
 cmake_minimum_required(VERSION 3.17)
 else()
@@ -26,6 +29,7 @@ project(OpenTimelineIO VERSION ${OTIO_VERSION} LANGUAGES C CXX)
 
 option(OTIO_CXX_COVERAGE "Invoke code coverage if gcov is available" OFF)
 option(OTIO_AUTOMATIC_SUBMODULES "Fetch submodules automatically" ON)
+option(OTIO_C_INSTALL "Install the C bindings" ON)
 option(OTIO_CXX_INSTALL "Install the cpp bindings" ON)
 option(OTIO_PYTHON_INSTALL "Install the python bindings" ON)
 option(OTIO_INSTALL_COMMANDLINE_TOOLS "Install the OTIO command line tools" ON)
@@ -137,6 +141,10 @@ endif()
 add_subdirectory(src/deps)
 add_subdirectory(src/opentime)
 add_subdirectory(src/opentimelineio)
+
+if(OTIO_C_INSTALL)
+    add_subdirectory(src/c-opentimelineio)
+endif()
 
 if(OTIO_PYTHON_INSTALL)
     add_subdirectory(src/py-opentimelineio)

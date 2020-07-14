@@ -45,7 +45,7 @@ set(OPENTIMELINEIO_HEADER_FILES
         include/copentimelineio/safely_typed_any.h
         )
 
-add_library(copentimelineio SHARED
+add_library(copentimelineio STATIC
         src/any.cpp
         src/anyDictionary.cpp
         src/anyVector.cpp
@@ -92,20 +92,20 @@ add_library(copentimelineio SHARED
         src/safely_typed_any.cpp
         ${OPENTIMELINEIO_HEADER_FILES})
 
-target_include_directories(copentimelineio PUBLIC
-        "${PROJECT_SOURCE_DIR}/../"
-        "${PROJECT_SOURCE_DIR}/../deps/"
-        "${PROJECT_SOURCE_DIR}/opentimelineio-bindings/include/"
-        "${PROJECT_SOURCE_DIR}/opentime-bindings/include/")
+target_include_directories(copentimelineio PRIVATE
+        "${PROJECT_SOURCE_DIR}/src/c-opentimelineio/opentime-bindings/include"
+        "${PROJECT_SOURCE_DIR}/src/c-opentimelineio/opentimelineio-bindings/include")
 
 target_link_libraries(copentimelineio opentime)
 target_link_libraries(copentimelineio opentimelineio)
 set_target_properties(copentimelineio PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib"
         MACOSX_RPATH true WINDOWS_EXPORT_ALL_SYMBOLS true)
-install(TARGETS copentimelineio
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib)
 
-if (NOT OTIO_CXX_NOINSTALL)
-    install(FILES ${OPENTIMELINEIO_HEADER_FILES} DESTINATION include/copentimelineio)
-endif (NOT OTIO_CXX_NOINSTALL)
+
+if(OTIO_C_INSTALL)
+        install(TARGETS copentimelineio
+                RUNTIME DESTINATION bin
+                LIBRARY DESTINATION lib)
+        install(FILES ${OPENTIMELINEIO_HEADER_FILES} 
+                DESTINATION include/copentimelineio)
+endif()
