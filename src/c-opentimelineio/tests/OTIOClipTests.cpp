@@ -88,6 +88,7 @@ TEST_F(OTIOClipTests, RangesTest)
     ExternalReference* mr =
         ExternalReference_create("/var/tmp/test.mov", tr, NULL);
     Clip*            clip = Clip_create(name, (MediaReference*) mr, tr, NULL);
+    RetainerSerializableObject* clip_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(clip));
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     RationalTime* clip_duration = Item_duration((Item*) clip, errorStatus);
@@ -139,7 +140,7 @@ TEST_F(OTIOClipTests, RangesTest)
     tr = NULL;
     RationalTime_destroy(tr_duration);
     tr_duration = NULL;
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(clip));
+    RetainerSerializableObject_managed_destroy(clip_r);
     clip = NULL;
     RationalTime_destroy(start);
     start = NULL;
@@ -160,25 +161,28 @@ TEST_F(OTIOClipTests, RangesTest)
 TEST_F(OTIOClipTests, RefDefaultTest)
 {
     Clip*             clip = Clip_create(NULL, NULL, NULL, NULL);
-    MissingReference* missing_reference =
-        MissingReference_create(NULL, NULL, NULL);
+    RetainerSerializableObject* clip_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(clip));
+    MissingReference* missing_reference = MissingReference_create(NULL, NULL, NULL);
+    RetainerSerializableObject* missing_reference_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(missing_reference));
     MediaReference* clip_media_reference = Clip_media_reference(clip);
+    RetainerSerializableObject* clip_media_reference_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(clip_media_reference));
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
         reinterpret_cast<OTIOSerializableObject*>(missing_reference),
         reinterpret_cast<OTIOSerializableObject*>(clip_media_reference)));
 
-    SerializableObject_possibly_delete(
-        reinterpret_cast<OTIOSerializableObject*>(clip_media_reference));
+    RetainerSerializableObject_managed_destroy(missing_reference_r);
     clip_media_reference = NULL;
 
-    ExternalReference* external_reference =
-        ExternalReference_create(NULL, NULL, NULL);
+    ExternalReference* external_reference = ExternalReference_create(NULL, NULL, NULL);
+    RetainerSerializableObject* external_reference_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(external_reference));
     Clip_set_media_reference(clip, (MediaReference*) external_reference);
     clip_media_reference = Clip_media_reference(clip);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
         reinterpret_cast<OTIOSerializableObject*>(external_reference),
         reinterpret_cast<OTIOSerializableObject*>(clip_media_reference)));
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(clip));
+    RetainerSerializableObject_managed_destroy(clip_r);
+    RetainerSerializableObject_managed_destroy(clip_media_reference_r);
+    RetainerSerializableObject_managed_destroy(external_reference_r);
     clip = NULL;
 }

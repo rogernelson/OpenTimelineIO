@@ -105,8 +105,8 @@ TEST_F(SerializableObjectTests, ConstructorTest)
     AnyDictionaryIterator_destroy(it);
     it = NULL;
 
-    SerializableObjectWithMetadata* so =
-        SerializableObjectWithMetadata_create(NULL, metadata);
+    SerializableObjectWithMetadata* so = SerializableObjectWithMetadata_create(NULL, metadata);
+    RetainerSerializableObject* so_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(so));
 
     AnyDictionary* metadataResult = SerializableObjectWithMetadata_metadata(so);
     it                            = AnyDictionary_find(metadataResult, "foo");
@@ -122,7 +122,7 @@ TEST_F(SerializableObjectTests, ConstructorTest)
     metadataResult = NULL;
     Any_destroy(fooValAny);
     fooValAny = NULL;
-    SerializableObjectWithMetadata_possibly_delete(so);
+    RetainerSerializableObject_managed_destroy(so_r);
     so = NULL;
 }
 
@@ -130,19 +130,24 @@ TEST_F(SerializableObjectTests, EqualityTest)
 {
     OTIOSerializableObject* o1 = SerializableObject_create();
     OTIOSerializableObject* o2 = SerializableObject_create();
+    RetainerSerializableObject* o1_r = RetainerSerializableObject_create(o1);
+    RetainerSerializableObject* o2_r = RetainerSerializableObject_create(o2);
     EXPECT_NE(o1, o2);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(o1, o2));
-
-    SerializableObject_possibly_delete(o1);
-    o1 = NULL;
-    SerializableObject_possibly_delete(o2);
-    o2 = NULL;
+    RetainerSerializableObject_managed_destroy(o1_r);
+    RetainerSerializableObject_managed_destroy(o2_r);
 }
 
 TEST_F(SerializableObjectTests, EquivalenceSymmetryTest)
 {
     Composable* A = Composable_create();
     Composable* B = Composable_create();
-    EXPECT_TRUE(Composable_is_equivalent_to(A, (OTIOSerializableObject*) B));
-    EXPECT_TRUE(Composable_is_equivalent_to(B, (OTIOSerializableObject*) A));
+    OTIOSerializableObject* A_o = (OTIOSerializableObject*) A;
+    OTIOSerializableObject* B_o = (OTIOSerializableObject*) B;
+    RetainerSerializableObject* A_r = RetainerSerializableObject_create(A_o);
+    RetainerSerializableObject* B_r = RetainerSerializableObject_create(B_o);
+    EXPECT_TRUE(Composable_is_equivalent_to(A, B_o));
+    EXPECT_TRUE(Composable_is_equivalent_to(B, A_o));
+    RetainerSerializableObject_managed_destroy(A_r);
+    RetainerSerializableObject_managed_destroy(B_r);
 }

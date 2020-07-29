@@ -40,6 +40,7 @@ TEST_F(OTIOEffectTests, ConstructorTest)
     AnyDictionaryIterator* it =
         AnyDictionary_insert(metadata, "foo", value_any);
     Effect* ef = Effect_create("blur it", "blur", metadata);
+    RetainerSerializableObject* ef_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(ef));
 
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
@@ -53,6 +54,8 @@ TEST_F(OTIOEffectTests, ConstructorTest)
     ASSERT_TRUE(decoded_successfully);
 
     OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    RetainerSerializableObject* decoded_object_r = RetainerSerializableObject_create(decoded_object);
+
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
         reinterpret_cast<OTIOSerializableObject*>(ef), decoded_object));
 
@@ -88,9 +91,9 @@ TEST_F(OTIOEffectTests, ConstructorTest)
     Any_destroy(compare_any);
     compare_any = NULL;
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(ef));
+    RetainerSerializableObject_managed_destroy(ef_r);
     ef = NULL;
-    SerializableObject_possibly_delete(decoded_object);
+    RetainerSerializableObject_managed_destroy(decoded_object_r);
     decoded_object = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -104,6 +107,8 @@ TEST_F(OTIOEffectTests, EqTest)
         AnyDictionary_insert(metadata, "foo", value_any);
     Effect* ef  = Effect_create("blur it", "blur", metadata);
     Effect* ef2 = Effect_create("blur it", "blur", metadata);
+    OTIO_RETAIN(ef);
+    OTIO_RETAIN(ef2);
 
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
         reinterpret_cast<OTIOSerializableObject*>(ef), reinterpret_cast<OTIOSerializableObject*>(ef2)));
@@ -114,10 +119,10 @@ TEST_F(OTIOEffectTests, EqTest)
     value_any = NULL;
     AnyDictionary_destroy(metadata);
     metadata = NULL;
-    //    SerializableObject_possibly_delete((SerializableObject*) ef);
-    //    ef = NULL; //TODO fix segfault
-    //    SerializableObject_possibly_delete((SerializableObject*) ef2);
-    //    ef2 = NULL;
+    OTIO_RELEASE(ef);
+    ef = NULL;
+    OTIO_RELEASE(ef2);
+    ef2 = NULL;
 }
 
 TEST_F(OTIOLinearTimeWarpTests, ConstructorTest)
@@ -128,6 +133,7 @@ TEST_F(OTIOLinearTimeWarpTests, ConstructorTest)
         AnyDictionary_insert(metadata, "foo", value_any);
 
     LinearTimeWarp* ef = LinearTimeWarp_create("Foo", NULL, 2.5f, metadata);
+    RetainerSerializableObject* ef_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(ef));
 
     EXPECT_STREQ(Effect_effect_name((Effect*) ef), "LinearTimeWarp");
     EXPECT_STREQ(
@@ -159,7 +165,7 @@ TEST_F(OTIOLinearTimeWarpTests, ConstructorTest)
     AnyDictionary_destroy(metadata);
     metadata = NULL;
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(ef));
+    RetainerSerializableObject_managed_destroy(ef_r);
     ef = NULL;
 }
 
@@ -171,6 +177,7 @@ TEST_F(OTIOFreezeFrameTests, ConstructorTest)
         AnyDictionary_insert(metadata, "foo", value_any);
 
     FreezeFrame* ef = FreezeFrame_create("Foo", metadata);
+    RetainerSerializableObject* ef_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(ef));
 
     EXPECT_STREQ(Effect_effect_name((Effect*) ef), "FreezeFrame");
     EXPECT_STREQ(
@@ -202,6 +209,6 @@ TEST_F(OTIOFreezeFrameTests, ConstructorTest)
     AnyDictionary_destroy(metadata);
     metadata = NULL;
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(ef));
+    RetainerSerializableObject_managed_destroy(ef_r);
     ef = NULL;
 }

@@ -15,6 +15,7 @@ protected:
     void SetUp() override
     {
         schema           = SerializableObject_create();
+        schema_r = RetainerSerializableObject_create(schema);
         Any* unknown_any = create_safely_typed_any_serializable_object(schema);
         OTIOErrorStatus* errorStatus          = OTIOErrorStatus_create();
         bool             decoded_successfully = deserialize_json_from_string(
@@ -22,8 +23,9 @@ protected:
         schema = safely_cast_retainer_any(unknown_any);
         OTIOErrorStatus_destroy(errorStatus);
     }
-    void TearDown() override { SerializableObject_possibly_delete(schema); }
+    void TearDown() override { RetainerSerializableObject_managed_destroy(schema_r); schema_r = NULL; }
     OTIOSerializableObject* schema = NULL;
+    RetainerSerializableObject* schema_r = NULL;
     const char*         has_undefined_schema =
         "{\n"
         "    \"OTIO_SCHEMA\": \"Clip.1\",\n"
@@ -75,8 +77,9 @@ TEST_F(OTIOUnknownSchemaTests, SerializeDeserializeTest)
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
     OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIO_RETAIN(decoded_object);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(schema, decoded_object));
-    SerializableObject_possibly_delete(decoded_object);
+    OTIO_RELEASE(decoded_object);
     decoded_object = NULL;
 }
 

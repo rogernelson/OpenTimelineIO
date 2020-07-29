@@ -21,8 +21,8 @@ TEST_F(OTIOTransitionTests, ConstructorTest)
     AnyDictionaryIterator* it =
         AnyDictionary_insert(metadata, "foo", value_any);
 
-    Transition* trx =
-        Transition_create("AtoB", "SMPTE.Dissolve", NULL, NULL, metadata);
+    Transition* trx = Transition_create("AtoB", "SMPTE.Dissolve", NULL, NULL, metadata);
+    OTIO_RETAIN(trx);
 
     AnyDictionaryIterator_destroy(it);
     it = NULL;
@@ -45,7 +45,7 @@ TEST_F(OTIOTransitionTests, ConstructorTest)
     AnyDictionary_destroy(metadata_compare);
     metadata_compare = NULL;
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(trx));
+    OTIO_RELEASE(trx);
     trx = NULL;
     Any_destroy(value_any);
 }

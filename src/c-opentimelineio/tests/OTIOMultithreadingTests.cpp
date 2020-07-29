@@ -37,13 +37,13 @@ protected:
 
 TEST_F(OTIOMultithreadingTests, Test1)
 {
-    OTIOSerializableObject*       child = SerializableObject_create();
-    SerializableObjectVector* childrenVector =
-        SerializableObjectVector_create();
+    OTIOSerializableObject* child = SerializableObject_create();
+    OTIO_RETAIN(child);
+    SerializableObjectVector* childrenVector = SerializableObjectVector_create();
     SerializableObjectVector_push_back(childrenVector, child);
 
-    SerializableCollection* sc =
-        SerializableCollection_create(NULL, childrenVector, NULL);
+    SerializableCollection* sc = SerializableCollection_create(NULL, childrenVector, NULL);
+    OTIO_RETAIN(sc);
 
     pthread_t tid[5];
 
@@ -59,8 +59,8 @@ TEST_F(OTIOMultithreadingTests, Test1)
 
     SerializableObjectVector_destroy(childrenVector);
     childrenVector = NULL;
-    SerializableObject_possibly_delete(child);
+    OTIO_RELEASE(child);
     child = NULL;
-    SerializableCollection_possibly_delete(sc);
+    OTIO_RELEASE(sc);
     sc = NULL;
 }

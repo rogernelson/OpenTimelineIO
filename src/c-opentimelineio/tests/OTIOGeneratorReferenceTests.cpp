@@ -51,6 +51,7 @@ protected:
 
         gen = GeneratorReference_create(
             "SMPTEBars", "SMPTEBars", available_range, parameters, metadata);
+        gen_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(gen));
 
         RationalTime_destroy(start_time);
         start_time = NULL;
@@ -67,11 +68,13 @@ protected:
     }
     void TearDown() override
     {
-        SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(gen));
+        RetainerSerializableObject_managed_destroy(gen_r);
+        gen_r = NULL;
         gen = NULL;
     }
 
     GeneratorReference* gen;
+    RetainerSerializableObject* gen_r;
     const char*         sample_data_dir;
 };
 
@@ -182,6 +185,7 @@ TEST_F(OTIOGeneratorReferenceTests, ReadFileTest)
     ASSERT_TRUE(deserializeOK);
 
     Timeline* timeline = (Timeline*) safely_cast_retainer_any(ref_any);
+    OTIO_RETAIN(timeline);
 
     Stack* stack = Timeline_tracks(timeline);
 
@@ -210,7 +214,7 @@ TEST_F(OTIOGeneratorReferenceTests, ReadFileTest)
     children_retainer_vector = NULL;
     ComposableRetainerVector_destroy(track_retainer_vector);
     track_retainer_vector = NULL;
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(timeline));
+    OTIO_RELEASE(timeline);
     timeline = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;

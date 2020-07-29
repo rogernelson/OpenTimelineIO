@@ -76,12 +76,13 @@ TEST_F(OTIOMarkerTests, ConstructorTest)
     ASSERT_TRUE(decoded_successfully);
 
     OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIO_RETAIN(decoded_object);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
         reinterpret_cast<OTIOSerializableObject*>(m), decoded_object));
 
     Any_destroy(marker_any);
     marker_any = NULL;
-    SerializableObject_possibly_delete(decoded_object);
+    OTIO_RELEASE(decoded_object);
     decoded_object = NULL;
 
     AnyDictionary_destroy(metadata);
@@ -129,6 +130,7 @@ TEST_F(OTIOMarkerTests, UpgradeTest)
     ASSERT_TRUE(decoded_successfully);
 
     Marker* marker = (Marker*) safely_cast_retainer_any(decoded);
+    OTIO_RETAIN(marker);
 
     RationalTime* start_time = RationalTime_create(0, 5);
     TimeRange*    range_compare =
@@ -142,22 +144,24 @@ TEST_F(OTIOMarkerTests, UpgradeTest)
     range_compare = NULL;
     TimeRange_destroy(marked_range);
     marked_range = NULL;
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(marker));
+    OTIO_RELEASE(marker);
     marker = NULL;
 }
 
 TEST_F(OTIOMarkerTests, EqualityTest)
 {
     Marker* m  = Marker_create(NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(m);
     Item*   bo = Item_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(bo);
 
     EXPECT_FALSE(SerializableObject_is_equivalent_to(
         reinterpret_cast<OTIOSerializableObject*>(m), reinterpret_cast<OTIOSerializableObject*>(bo)));
     EXPECT_FALSE(SerializableObject_is_equivalent_to(
         reinterpret_cast<OTIOSerializableObject*>(bo), reinterpret_cast<OTIOSerializableObject*>(m)));
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(bo));
+    OTIO_RELEASE(bo);
     bo = NULL;
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(m));
+    OTIO_RELEASE(m);
     m = NULL;
 }

@@ -28,6 +28,7 @@ protected:
         AnyDictionaryIterator* it = AnyDictionary_insert(md, "foo", stringAny);
 
         sc = SerializableCollection_create("test", children, md);
+        sc_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(sc));
 
         AnyDictionaryIterator_destroy(it);
         it = NULL;
@@ -38,7 +39,7 @@ protected:
     {
         SerializableObjectVector_destroy(children);
         children = NULL;
-        SerializableCollection_possibly_delete(sc);
+        RetainerSerializableObject_managed_destroy(sc_r);
         sc = NULL;
     }
     Clip*                     testClip;
@@ -47,6 +48,7 @@ protected:
     Any*                      stringAny;
     SerializableObjectVector* children;
     SerializableCollection*   sc;
+    RetainerSerializableObject* sc_r;
 };
 
 TEST_F(OTIOSerializableCollectionTests, ConstructorTest)

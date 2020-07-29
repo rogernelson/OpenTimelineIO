@@ -26,6 +26,7 @@ TEST_F(OTIOTimelineTests, InitTest)
 {
     RationalTime* rt = RationalTime_create(12, 24);
     Timeline*     tl = Timeline_create("test_timeline", rt, NULL);
+    OTIO_RETAIN(tl);
 
     EXPECT_STREQ(Timeline_name(tl), "test_timeline");
 
@@ -36,7 +37,7 @@ TEST_F(OTIOTimelineTests, InitTest)
     rt = NULL;
     RationalTime_destroy(tl_global_start_time);
     tl_global_start_time = NULL;
-    Timeline_possibly_delete(tl);
+    OTIO_RELEASE(tl);
     tl = NULL;
 }
 
@@ -50,6 +51,7 @@ TEST_F(OTIOTimelineTests, MetadataTest)
     it = NULL;
 
     Timeline* tl = Timeline_create("test_timeline", rt, metadata);
+    OTIO_RETAIN(tl);
 
     AnyDictionary* metadataResult = Timeline_metadata(tl);
     it                            = AnyDictionary_find(metadataResult, "foo");
@@ -91,7 +93,7 @@ TEST_F(OTIOTimelineTests, MetadataTest)
     barAny = NULL;
     Any_destroy(decoded);
     decoded = NULL;
-    Timeline_possibly_delete(tl);
+    OTIO_RELEASE(tl);
     tl = NULL;
 }
 
@@ -128,6 +130,7 @@ TEST_F(OTIOTimelineTests, RangeTest)
     ASSERT_TRUE(Stack_insert_child(stack, 0, (Composable*) track, errorStatus));
 
     Timeline* tl = Timeline_create("test_timeline", NULL, NULL);
+    OTIO_RETAIN(tl);
     Timeline_set_tracks(tl, stack);
 
     RationalTime* rtx3        = RationalTime_create(15, 24);
@@ -152,7 +155,7 @@ TEST_F(OTIOTimelineTests, RangeTest)
     tl_duration = NULL;
     RationalTime_destroy(rtx3);
     rtx3 = NULL;
-    Timeline_possibly_delete(tl);
+    OTIO_RELEASE(tl);
     tl = NULL;
 }
 
@@ -170,6 +173,8 @@ TEST_F(OTIOTimelineTests, SerializeTest)
     ASSERT_TRUE(Stack_insert_child(stack, 0, (Composable*) track, errorStatus));
 
     Timeline* tl = Timeline_create("test_timeline", NULL, NULL);
+    OTIO_RETAIN(tl);
+
     Timeline_set_tracks(tl, stack);
 
     Any* tl_any =
@@ -191,7 +196,7 @@ TEST_F(OTIOTimelineTests, SerializeTest)
     errorStatus = NULL;
     Any_destroy(decoded);
     decoded = NULL;
-    Timeline_possibly_delete(tl);
+    OTIO_RELEASE(tl);
     tl = NULL;
 }
 
@@ -210,6 +215,7 @@ TEST_F(OTIOTimelineTests, SerializationOfSubclassesTest)
     ASSERT_TRUE(Stack_insert_child(stack, 0, (Composable*) track, errorStatus));
 
     Timeline* tl = Timeline_create("Testing Serialization", NULL, NULL);
+    OTIO_RETAIN(tl);
     Timeline_set_tracks(tl, stack);
 
     Any* tl_any =
@@ -227,6 +233,7 @@ TEST_F(OTIOTimelineTests, SerializationOfSubclassesTest)
     OTIOSerializableObject* deserialized_object = safely_cast_retainer_any(decoded);
 
     Timeline* tl2 = (Timeline*) deserialized_object;
+    OTIO_RETAIN(tl2);
     EXPECT_TRUE(tl2 != NULL);
 
     EXPECT_STREQ(Timeline_name(tl), Timeline_name(tl2));
@@ -294,9 +301,9 @@ TEST_F(OTIOTimelineTests, SerializationOfSubclassesTest)
     tl2_tracks_vector_it = NULL;
     ComposableRetainerVectorIterator_destroy(clip2_it);
     clip2_it = NULL;
-    Timeline_possibly_delete(tl);
+    OTIO_RELEASE(tl);
     tl = NULL;
-    Timeline_possibly_delete(tl2);
+    OTIO_RELEASE(tl2);
     tl2 = NULL;
 }
 
@@ -317,6 +324,7 @@ TEST_F(OTIOTimelineTests, TracksTest)
     ASSERT_TRUE(Stack_insert_child(stack, 3, (Composable*) A2, errorStatus));
 
     Timeline* tl = Timeline_create(NULL, NULL, NULL);
+    OTIO_RETAIN(tl);
     Timeline_set_tracks(tl, stack);
 
     TrackVector* videoTrackVector = Timeline_video_tracks(tl);
@@ -358,6 +366,6 @@ TEST_F(OTIOTimelineTests, TracksTest)
     aud_it = NULL;
     TrackVectorIterator_destroy(aud_it_end);
     aud_it_end = NULL;
-    Timeline_possibly_delete(tl);
+    OTIO_RELEASE(tl);
     tl = NULL;
 }

@@ -100,7 +100,9 @@ protected:
 TEST_F(OTIOCompositionTests, ConstructorTest)
 {
     Item*             it = Item_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(it);
     Composition*      co = Composition_create("test", NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(co);
     ComposableVector* composableVector = ComposableVector_create();
     ComposableVector_push_back(composableVector, (Composable*) it);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
@@ -133,8 +135,8 @@ TEST_F(OTIOCompositionTests, ConstructorTest)
         ComposableRetainerVectorIterator_advance(retainerIt, 1),
         ComposableVectorIterator_advance(vectorIt, 1))
     {
-        Composable* composableVectorElement =
-            ComposableVectorIterator_value(vectorIt);
+        Composable* composableVectorElement = ComposableVectorIterator_value(vectorIt);
+        OTIO_RETAIN(composableVectorElement);
         RetainerComposable* retainerVectorElement =
             ComposableRetainerVectorIterator_value(retainerIt);
         Composable* retainerComposableValue =
@@ -145,15 +147,14 @@ TEST_F(OTIOCompositionTests, ConstructorTest)
             reinterpret_cast<OTIOSerializableObject*>(retainerComposableValue)));
 
         RetainerComposable_managed_destroy(retainerVectorElement);
+        OTIO_RELEASE(composableVectorElement);
         retainerVectorElement = NULL;
-        SerializableObject_possibly_delete(
-            reinterpret_cast<OTIOSerializableObject*>(composableVectorElement));
         composableVectorElement = NULL;
     }
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(it));
+    OTIO_RELEASE(it);
     it = NULL;
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(co));
+    OTIO_RELEASE(co);
     co = NULL;
     ComposableVector_destroy(composableVector);
     OTIOErrorStatus_destroy(errorStatus);
@@ -171,7 +172,9 @@ TEST_F(OTIOCompositionTests, ConstructorTest)
 TEST_F(OTIOCompositionTests, EqualityTest)
 {
     Composition* co0  = Composition_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(co0);
     Composition* co00 = Composition_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(co00);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
         reinterpret_cast<OTIOSerializableObject*>(co0), reinterpret_cast<OTIOSerializableObject*>(co00)));
 
@@ -179,6 +182,7 @@ TEST_F(OTIOCompositionTests, EqualityTest)
     Item*             b   = Item_create("B", NULL, NULL, NULL, NULL);
     Item*             c   = Item_create("C", NULL, NULL, NULL, NULL);
     Composition*      co1 = Composition_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(co1);
     ComposableVector* composableVector = ComposableVector_create();
     ComposableVector_push_back(composableVector, (Composable*) a);
     ComposableVector_push_back(composableVector, (Composable*) b);
@@ -195,6 +199,7 @@ TEST_F(OTIOCompositionTests, EqualityTest)
     Item*        y   = Item_create("Y", NULL, NULL, NULL, NULL);
     Item*        z   = Item_create("Z", NULL, NULL, NULL, NULL);
     Composition* co2 = Composition_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(co2);
     composableVector = ComposableVector_create();
     ComposableVector_push_back(composableVector, (Composable*) x);
     ComposableVector_push_back(composableVector, (Composable*) y);
@@ -208,6 +213,7 @@ TEST_F(OTIOCompositionTests, EqualityTest)
     Item*        b2  = Item_create("B", NULL, NULL, NULL, NULL);
     Item*        c2  = Item_create("C", NULL, NULL, NULL, NULL);
     Composition* co3 = Composition_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(co3);
     composableVector = ComposableVector_create();
     ComposableVector_push_back(composableVector, (Composable*) a2);
     ComposableVector_push_back(composableVector, (Composable*) b2);
@@ -219,18 +225,14 @@ TEST_F(OTIOCompositionTests, EqualityTest)
 
     EXPECT_FALSE(SerializableObject_is_equivalent_to(
         reinterpret_cast<OTIOSerializableObject*>(co1), reinterpret_cast<OTIOSerializableObject*>(co2)));
-    /*EXPECT_TRUE(SerializableObject_is_equivalent_to( //TODO Fix Segfault
-        (SerializableObject*) co1, (SerializableObject*) co3));*/
+    EXPECT_TRUE(SerializableObject_is_equivalent_to(
+        reinterpret_cast<OTIOSerializableObject*>(co1), reinterpret_cast<OTIOSerializableObject*>(co3)));
 
-    //    SerializableObject_possibly_delete((SerializableObject*) co0);
-    //    co0 = NULL;
-    //    SerializableObject_possibly_delete((SerializableObject*) co00);
-    //    co00 = NULL;
-    //    SerializableObject_possibly_delete((SerializableObject*) co1);
-    //    co1 = NULL;
-    //    SerializableObject_possibly_delete((SerializableObject*) co2);
-    //    co2 = NULL;
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(co3));
+    OTIO_RELEASE(co0);
+    OTIO_RELEASE(co00);
+    OTIO_RELEASE(co1);
+    OTIO_RELEASE(co2);
+    OTIO_RELEASE(co3);
     co3 = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -238,7 +240,9 @@ TEST_F(OTIOCompositionTests, EqualityTest)
 TEST_F(OTIOCompositionTests, IsParentOfTest)
 {
     Composition*     co   = Composition_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(co);
     Composition*     co_2 = Composition_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(co_2);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     EXPECT_FALSE(Composition_is_parent_of(co, (Composable*) co_2));
@@ -248,7 +252,8 @@ TEST_F(OTIOCompositionTests, IsParentOfTest)
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(co));
+    OTIO_RELEASE(co);
+    OTIO_RELEASE(co_2);
     co = NULL;
 }
 
@@ -256,6 +261,7 @@ TEST_F(OTIOCompositionTests, ParentManipTest)
 {
     Item*             it = Item_create(NULL, NULL, NULL, NULL, NULL);
     Composition*      co = Composition_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(co);
     ComposableVector* composableVector = ComposableVector_create();
     ComposableVector_push_back(composableVector, (Composable*) it);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
@@ -263,7 +269,7 @@ TEST_F(OTIOCompositionTests, ParentManipTest)
     Composition* parent = Composable_parent((Composable*) it);
     EXPECT_EQ(parent, co);
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(co));
+    OTIO_RELEASE(co);
     co = NULL;
     ComposableVector_destroy(composableVector);
     composableVector = NULL;
@@ -274,7 +280,9 @@ TEST_F(OTIOCompositionTests, ParentManipTest)
 TEST_F(OTIOCompositionTests, MoveChildTest)
 {
     Item*             it = Item_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(it);
     Composition*      co = Composition_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(co);
     ComposableVector* composableVector = ComposableVector_create();
     ComposableVector_push_back(composableVector, (Composable*) it);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
@@ -283,6 +291,7 @@ TEST_F(OTIOCompositionTests, MoveChildTest)
     EXPECT_EQ(parent, co);
 
     Composition* co2 = Composition_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(co2);
 
     Composition_remove_child(co, 0, errorStatus);
 
@@ -291,10 +300,11 @@ TEST_F(OTIOCompositionTests, MoveChildTest)
     parent = Composable_parent((Composable*) it);
     EXPECT_EQ(parent, co2);
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(co));
+    OTIO_RELEASE(it);
+    OTIO_RELEASE(co);
     co = NULL;
-    //    SerializableObject_possibly_delete((SerializableObject*) co2);
-    //    co2 = NULL; //TODO Fix segfault
+    OTIO_RELEASE(co2);
+    co2 = NULL;
     ComposableVector_destroy(composableVector);
     composableVector = NULL;
     OTIOErrorStatus_destroy(errorStatus);
@@ -330,17 +340,19 @@ TEST_F(OTIOCompositionTests, RemoveActuallyRemovesTest)
 TEST_F(OTIOStackTests, ConstructorTest)
 {
     Stack* st = Stack_create("test", NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(st);
     EXPECT_STREQ(
         SerializableObjectWithMetadata_name(
             (SerializableObjectWithMetadata*) st),
         "test");
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(st));
+    OTIO_RELEASE(st);
     st = NULL;
 }
 
 TEST_F(OTIOStackTests, SerializeTest)
 {
     Stack*           st          = Stack_create("test", NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(st);
     Clip*            clip        = Clip_create("testClip", NULL, NULL, NULL);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
     bool             insertOK    = Composition_insert_child(
@@ -357,12 +369,13 @@ TEST_F(OTIOStackTests, SerializeTest)
     ASSERT_TRUE(decoded_successfully);
 
     OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIO_RETAIN(decoded_object);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
         reinterpret_cast<OTIOSerializableObject*>(st), decoded_object));
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(st));
+    OTIO_RELEASE(st);
     st = NULL;
-    SerializableObject_possibly_delete(decoded_object);
+    OTIO_RELEASE(decoded_object);
     decoded_object = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -371,7 +384,9 @@ TEST_F(OTIOStackTests, SerializeTest)
 TEST_F(OTIOStackTests, TrimChildRangeTest)
 {
     Track* tr = Track_create("foo", NULL, NULL, NULL);
+    OTIO_RETAIN(tr);
     Stack* st = Stack_create("foo", NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(st);
 
     Composition* comp[] = { (Composition*) tr, (Composition*) st };
 
@@ -381,15 +396,13 @@ TEST_F(OTIOStackTests, TrimChildRangeTest)
 
         RationalTime* start_time = RationalTime_create(100, 24);
         RationalTime* duration   = RationalTime_create(50, 24);
-        TimeRange*    tr =
-            TimeRange_create_with_start_time_and_duration(start_time, duration);
+        TimeRange*    tr = TimeRange_create_with_start_time_and_duration(start_time, duration);
         Item_set_source_range((Item*) co, tr);
         RationalTime_destroy(start_time);
         RationalTime_destroy(duration);
         start_time = RationalTime_create(110, 24);
         duration   = RationalTime_create(30, 24);
-        TimeRange* r =
-            TimeRange_create_with_start_time_and_duration(start_time, duration);
+        TimeRange* r = TimeRange_create_with_start_time_and_duration(start_time, duration);
         TimeRange* st_trim_child_range = Composition_trim_child_range(co, r);
         EXPECT_TRUE(TimeRange_equal(st_trim_child_range, r));
         RationalTime_destroy(start_time);
@@ -426,8 +439,7 @@ TEST_F(OTIOStackTests, TrimChildRangeTest)
         RationalTime_destroy(duration);
         start_time = RationalTime_create(100, 24);
         duration   = RationalTime_create(20, 24);
-        tr =
-            TimeRange_create_with_start_time_and_duration(start_time, duration);
+        tr = TimeRange_create_with_start_time_and_duration(start_time, duration);
         EXPECT_TRUE(TimeRange_equal(tr, st_trim_child_range));
         RationalTime_destroy(start_time);
         RationalTime_destroy(duration);
@@ -443,8 +455,7 @@ TEST_F(OTIOStackTests, TrimChildRangeTest)
         RationalTime_destroy(duration);
         start_time = RationalTime_create(110, 24);
         duration   = RationalTime_create(40, 24);
-        tr =
-            TimeRange_create_with_start_time_and_duration(start_time, duration);
+        tr = TimeRange_create_with_start_time_and_duration(start_time, duration);
         EXPECT_TRUE(TimeRange_equal(tr, st_trim_child_range));
         RationalTime_destroy(start_time);
         RationalTime_destroy(duration);
@@ -464,9 +475,9 @@ TEST_F(OTIOStackTests, TrimChildRangeTest)
         TimeRange_destroy(st_trim_child_range);
         TimeRange_destroy(co_source_range);
     }
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(tr));
+    OTIO_RELEASE(tr);
     tr = NULL;
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(st));
+    OTIO_RELEASE(st);
     st = NULL;
 }
 
@@ -474,30 +485,31 @@ TEST_F(OTIOStackTests, RangeOfChildTest)
 {
     RationalTime* start_time = RationalTime_create(100, 24);
     RationalTime* duration   = RationalTime_create(50, 24);
-    TimeRange*    source_range =
-        TimeRange_create_with_start_time_and_duration(start_time, duration);
+    TimeRange*    source_range = TimeRange_create_with_start_time_and_duration(start_time, duration);
     Clip* clip1 = Clip_create("clip1", NULL, source_range, NULL);
+    OTIO_RETAIN(clip1);
     RationalTime_destroy(start_time);
     RationalTime_destroy(duration);
     TimeRange_destroy(source_range);
     start_time = RationalTime_create(101, 24);
     duration   = RationalTime_create(50, 24);
-    source_range =
-        TimeRange_create_with_start_time_and_duration(start_time, duration);
+    source_range = TimeRange_create_with_start_time_and_duration(start_time, duration);
     Clip* clip2 = Clip_create("clip2", NULL, source_range, NULL);
+    OTIO_RETAIN(clip2);
     RationalTime_destroy(start_time);
     RationalTime_destroy(duration);
     TimeRange_destroy(source_range);
     start_time = RationalTime_create(102, 24);
     duration   = RationalTime_create(50, 24);
-    source_range =
-        TimeRange_create_with_start_time_and_duration(start_time, duration);
+    source_range = TimeRange_create_with_start_time_and_duration(start_time, duration);
     Clip* clip3 = Clip_create("clip3", NULL, source_range, NULL);
+    OTIO_RETAIN(clip3);
     RationalTime_destroy(start_time);
     RationalTime_destroy(duration);
     TimeRange_destroy(source_range);
 
     Stack*           st          = Stack_create("foo", NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(st);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
     Composition_insert_child(
         (Composition*) st, 0, (Composable*) clip1, errorStatus);
@@ -508,8 +520,7 @@ TEST_F(OTIOStackTests, RangeOfChildTest)
 
     /** stack should be as long as longest child */
     RationalTime* length = RationalTime_create(50, 24);
-    RationalTime* st_duration =
-        Composable_duration((Composable*) st, errorStatus);
+    RationalTime* st_duration = Composable_duration((Composable*) st, errorStatus);
     EXPECT_TRUE(RationalTime_equal(length, st_duration));
     RationalTime_destroy(length);
     RationalTime_destroy(st_duration);
@@ -556,7 +567,10 @@ TEST_F(OTIOStackTests, RangeOfChildTest)
     range_at_1 = NULL;
     TimeRange_destroy(range_at_2);
     range_at_2 = NULL;
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(st));
+    OTIO_RELEASE(clip1);
+    OTIO_RELEASE(clip2);
+    OTIO_RELEASE(clip3);
+    OTIO_RELEASE(st);
     st = NULL;
 }
 
@@ -592,7 +606,8 @@ TEST_F(OTIOStackTests, RangeOfChildWithDurationTest)
     st_sourcerange =
         TimeRange_create_with_start_time_and_duration(start_time, duration);
 
-    Stack*           st          = Stack_create("foo", NULL, NULL, NULL, NULL);
+    Stack* st = Stack_create("foo", NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(st);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
     Composition_insert_child(
         (Composition*) st, 0, (Composable*) clip1, errorStatus);
@@ -616,8 +631,7 @@ TEST_F(OTIOStackTests, RangeOfChildWithDurationTest)
     RetainerComposable* retainerComposable =
         ComposableRetainerVectorIterator_value(it);
     Composable* st_0 = RetainerComposable_take_value(retainerComposable);
-    TimeRange*  child_range =
-        Composition_range_of_child((Composition*) st, st_0, errorStatus);
+    TimeRange*  child_range = Composition_range_of_child((Composition*) st, st_0, errorStatus);
     start_time = RationalTime_create(0, 24);
     duration   = RationalTime_create(50, 24);
     TimeRange* time_range =
@@ -674,18 +688,19 @@ TEST_F(OTIOStackTests, RangeOfChildWithDurationTest)
     RetainerComposable_managed_destroy(retainerComposable);
 
     Clip*      errorClip = Clip_create(NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(errorClip);
     TimeRange* errorTime =
         Item_trimmed_range_in_parent((Item*) errorClip, errorStatus);
     OTIO_ErrorStatus_Outcome outcome = OTIOErrorStatus_get_outcome(errorStatus);
     EXPECT_EQ(outcome, 18);
     TimeRange_destroy(errorTime);
     errorTime = NULL;
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(errorClip));
+    OTIO_RELEASE(errorClip);
     errorClip = NULL;
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(st));
+    OTIO_RELEASE(st);
     st = NULL;
 }
 
@@ -718,10 +733,10 @@ TEST_F(OTIOStackTests, TransformedTimeTest)
 
     start_time = RationalTime_create(5, 24);
     duration   = RationalTime_create(5, 24);
-    st_sourcerange =
-        TimeRange_create_with_start_time_and_duration(start_time, duration);
+    st_sourcerange = TimeRange_create_with_start_time_and_duration(start_time, duration);
 
-    Stack*           st          = Stack_create("foo", NULL, NULL, NULL, NULL);
+    Stack* st = Stack_create("foo", NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(st);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
     Composition_insert_child(
         (Composition*) st, 0, (Composable*) clip1, errorStatus);
@@ -874,7 +889,7 @@ TEST_F(OTIOStackTests, TransformedTimeTest)
     RationalTime_destroy(test_time2);
     RationalTime_destroy(st_transformed_time);
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(st));
+    OTIO_RELEASE(st);
     st = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -883,6 +898,7 @@ TEST_F(OTIOStackTests, TransformedTimeTest)
 TEST_F(OTIOTrackTests, SerializeTest)
 {
     Track*           sq          = Track_create("foo", NULL, NULL, NULL);
+    OTIO_RETAIN(sq);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
     Any*             sq_any =
         create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(sq));
@@ -894,12 +910,13 @@ TEST_F(OTIOTrackTests, SerializeTest)
     ASSERT_TRUE(decoded_successfully);
 
     OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIO_RETAIN(decoded_object);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
         reinterpret_cast<OTIOSerializableObject*>(sq), decoded_object));
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
+    OTIO_RELEASE(sq);
     sq = NULL;
-    SerializableObject_possibly_delete(decoded_object);
+    OTIO_RELEASE(decoded_object);
     decoded_object = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -913,6 +930,7 @@ TEST_F(OTIOTrackTests, InstancingTest)
         TimeRange_create_with_start_time_and_duration(zero_time, length);
     Item*            it          = Item_create(NULL, tr, NULL, NULL, NULL);
     Track*           sq          = Track_create(NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(sq);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
     bool             insertOK    = Composition_insert_child(
         (Composition*) sq, 0, (Composable*) it, errorStatus);
@@ -923,10 +941,11 @@ TEST_F(OTIOTrackTests, InstancingTest)
 
     /** Can't put item on a composition if it's already in one */
     Track* test_track = Track_create(NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(test_track);
     insertOK          = Composition_insert_child(
         (Composition*) test_track, 0, (Composable*) it, errorStatus);
     ASSERT_FALSE(insertOK);
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(test_track));
+    OTIO_RELEASE(test_track);
     test_track = NULL;
 
     /** Instancing is not allowed */
@@ -934,18 +953,17 @@ TEST_F(OTIOTrackTests, InstancingTest)
     ComposableVector_push_back(composableVector, (Composable*) it);
     ComposableVector_push_back(composableVector, (Composable*) it);
     ComposableVector_push_back(composableVector, (Composable*) it);
-    test_track = Track_create(NULL, NULL, NULL, NULL);
-    insertOK   = Composition_set_children(
-        (Composition*) test_track, composableVector, errorStatus);
+    Track* test_track2 = Track_create(NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(test_track2);
+    insertOK   = Composition_set_children((Composition*) test_track2, composableVector, errorStatus);
     ASSERT_FALSE(insertOK);
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(test_track));
+    OTIO_RELEASE(test_track2);
     test_track = NULL;
     ComposableVector_destroy(composableVector);
     composableVector = NULL;
 
     /**inserting duplicates should raise error and have no side effects*/
-    ComposableRetainerVector* composableRetainerVector =
-        Composition_children((Composition*) sq);
+    ComposableRetainerVector* composableRetainerVector = Composition_children((Composition*) sq);
     EXPECT_EQ(ComposableRetainerVector_size(composableRetainerVector), 1);
     ComposableRetainerVector_destroy(composableRetainerVector);
     insertOK = Composition_append_child(
@@ -962,7 +980,7 @@ TEST_F(OTIOTrackTests, InstancingTest)
     EXPECT_EQ(ComposableRetainerVector_size(composableRetainerVector), 1);
     ComposableRetainerVector_destroy(composableRetainerVector);
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
+    OTIO_RELEASE(sq);
     sq = NULL;
     RationalTime_destroy(length);
     length = NULL;
@@ -977,11 +995,12 @@ TEST_F(OTIOTrackTests, DeleteParentContainerTest)
     /** deleting the parent container should null out the parent pointer */
     Item*            it          = Item_create(NULL, NULL, NULL, NULL, NULL);
     Track*           sq          = Track_create(NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(sq);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
     bool             insertOK    = Composition_insert_child(
         (Composition*) sq, 0, (Composable*) it, errorStatus);
     ASSERT_TRUE(insertOK);
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
+    OTIO_RELEASE(sq);
     sq                  = NULL;
     Composition* parent = Composable_parent((Composable*) it);
     EXPECT_EQ(parent, nullptr);
@@ -1054,6 +1073,7 @@ TEST_F(OTIOTrackTests, RangeTest)
         TimeRange_create_with_start_time_and_duration(zero_time, length);
     Item*            it          = Item_create(NULL, tr, NULL, NULL, NULL);
     Track*           sq          = Track_create(NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(sq);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
     bool             insertOK    = Composition_append_child(
         (Composition*) sq, (Composable*) it, errorStatus);
@@ -1184,13 +1204,14 @@ TEST_F(OTIOTrackTests, RangeTest)
     RationalTime_destroy(sq_duration);
     RationalTime_destroy(duration_compare);
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
+    OTIO_RELEASE(sq);
     sq = NULL;
 }
 
 TEST_F(OTIOTrackTests, RangeOfChildTest)
 {
     Track*        sq         = Track_create("foo", NULL, NULL, NULL);
+    OTIO_RETAIN(sq);
     RationalTime* start_time = RationalTime_create(100, 24);
     RationalTime* duration   = RationalTime_create(50, 24);
     TimeRange*    st_sourcerange =
@@ -1339,7 +1360,7 @@ TEST_F(OTIOTrackTests, RangeOfChildTest)
 
     ComposableRetainerVector_destroy(composableRetainerVector);
     composableRetainerVector = NULL;
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
+    OTIO_RELEASE(sq);
     sq = NULL;
     RetainerComposable_managed_destroy(retainerComposable);
     retainerComposable = NULL;
@@ -1352,6 +1373,7 @@ TEST_F(OTIOTrackTests, RangeTrimmedOutTest)
     TimeRange*    source_range =
         TimeRange_create_with_start_time_and_duration(start_time, duration);
     Track* sq = Track_create("top_track", source_range, NULL, NULL);
+    OTIO_RETAIN(sq);
     TimeRange_destroy(source_range);
     RationalTime_destroy(start_time);
     RationalTime_destroy(duration);
@@ -1424,7 +1446,7 @@ TEST_F(OTIOTrackTests, RangeTrimmedOutTest)
     TimeRange_destroy(not_nothing);
     TimeRange_destroy(source_range);
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
+    OTIO_RELEASE(sq);
     sq = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -1433,6 +1455,7 @@ TEST_F(OTIOTrackTests, RangeTrimmedOutTest)
 TEST_F(OTIOTrackTests, RangeNestedTest)
 {
     Track*        sq         = Track_create("inner", NULL, NULL, NULL);
+    OTIO_RETAIN(sq);
     RationalTime* start_time = RationalTime_create(100, 24);
     RationalTime* duration   = RationalTime_create(50, 24);
     TimeRange*    st_sourcerange =
@@ -1475,19 +1498,25 @@ TEST_F(OTIOTrackTests, RangeNestedTest)
     EXPECT_EQ(ComposableRetainerVector_size(composableRetainerVector), 3);
     ComposableRetainerVector_destroy(composableRetainerVector);
 
-    //    OTIOErrorStatus_destroy(errorStatus);
-    //    errorStatus = OTIOErrorStatus_create();
-    //    Track* sq2  = (Track*) SerializableObject_clone(
-    //        (SerializableObject*) sq, errorStatus);
-    //    printf("%d\n", OTIOErrorStatus_get_outcome(errorStatus));
-    //    Track* sq3 = (Track*) SerializableObject_clone( //TODO fix segfault
-    //        (SerializableObject*) sq, errorStatus);
-    //    printf("%d\n", OTIOErrorStatus_get_outcome(errorStatus));
+    OTIOErrorStatus_destroy(errorStatus);
+    errorStatus = OTIOErrorStatus_create();
+    Track* sq2  = (Track*) SerializableObject_clone(
+                                                    (OTIOSerializableObject*) sq, errorStatus);
+    printf("%d\n", OTIOErrorStatus_get_outcome(errorStatus));
+    OTIO_RETAIN(sq2);
+    Track* sq3 = (Track*) SerializableObject_clone(
+                                                   (OTIOSerializableObject*) sq, errorStatus);
+    printf("%d\n", OTIOErrorStatus_get_outcome(errorStatus));
+    OTIO_RETAIN(sq3);
+    OTIO_RELEASE(sq);
+    OTIO_RELEASE(sq2);
+    OTIO_RELEASE(sq3);
 }
 
 TEST_F(OTIOTrackTests, SetItemTest)
 {
     Track*           sq          = Track_create(NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(sq);
     Clip*            it          = Clip_create(NULL, NULL, NULL, NULL);
     Clip*            it_2        = Clip_create(NULL, NULL, NULL, NULL);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
@@ -1505,13 +1534,14 @@ TEST_F(OTIOTrackTests, SetItemTest)
     composableRetainerVector = Composition_children((Composition*) sq);
     EXPECT_EQ(ComposableRetainerVector_size(composableRetainerVector), 1);
     ComposableRetainerVector_destroy(composableRetainerVector);
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
+    OTIO_RELEASE(sq);
     sq = NULL;
 }
 
 TEST_F(OTIOTrackTests, TransformedTimeTest)
 {
     Track*        sq         = Track_create("foo", NULL, NULL, NULL);
+    OTIO_RETAIN(sq);
     RationalTime* start_time = RationalTime_create(100, 24);
     RationalTime* duration   = RationalTime_create(50, 24);
     TimeRange*    st_sourcerange =
@@ -1694,13 +1724,14 @@ TEST_F(OTIOTrackTests, TransformedTimeTest)
     RationalTime_destroy(transformed_time);
     RationalTime_destroy(compare_time);
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
+    OTIO_RELEASE(sq);
     sq = NULL;
 }
 
 TEST_F(OTIOTrackTests, NeighborsOfSimpleTest)
 {
     Track* sq = Track_create(NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(sq);
 
     RationalTime* in_offset  = RationalTime_create(10, 24);
     RationalTime* out_offset = RationalTime_create(10, 24);
@@ -1737,8 +1768,8 @@ TEST_F(OTIOTrackTests, NeighborsOfSimpleTest)
     RationalTime* start_time = RationalTime_create(0, 24);
     TimeRange*    source_range =
         TimeRange_create_with_start_time_and_duration(start_time, in_offset);
-    Gap* fill =
-        Gap_create_with_source_range(source_range, NULL, NULL, NULL, NULL);
+    Gap* fill = Gap_create_with_source_range(source_range, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(fill);
     retainerComposable      = RetainerPairComposable_first(neighbors);
     retainerComposableValue = RetainerComposable_take_value(retainerComposable);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
@@ -1746,11 +1777,12 @@ TEST_F(OTIOTrackTests, NeighborsOfSimpleTest)
         reinterpret_cast<OTIOSerializableObject*>(fill)));
     retainerComposable      = RetainerPairComposable_second(neighbors);
     retainerComposableValue = RetainerComposable_take_value(retainerComposable);
-    //    EXPECT_TRUE(SerializableObject_is_equivalent_to( //TODO fix segfault
-    //        (SerializableObject*) retainerComposableValue,
-    //        (SerializableObject*) fill));
+    EXPECT_TRUE(SerializableObject_is_equivalent_to(
+            (OTIOSerializableObject*) retainerComposableValue,
+            (OTIOSerializableObject*) fill));
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
+    OTIO_RELEASE(fill);
+    OTIO_RELEASE(sq);
     sq = NULL;
 }
 
@@ -1779,8 +1811,8 @@ TEST_F(OTIOTrackTests, NeighborsOfFromDataTest)
     RetainerComposable* firstTrackRetainerComposable =
         ComposableRetainerVector_at(composableRetainerVector, 0);
 
-    Track* seq =
-        (Track*) RetainerComposable_take_value(firstTrackRetainerComposable);
+    Track* seq = (Track*) RetainerComposable_take_value(firstTrackRetainerComposable);
+    OTIO_RETAIN(seq);
 
     ComposableRetainerVector_destroy(composableRetainerVector);
     composableRetainerVector = NULL;
@@ -1922,7 +1954,7 @@ TEST_F(OTIOTrackTests, NeighborsOfFromDataTest)
     TimeRange_destroy(source_range);
     RetainerPairComposable_destroy(neighbors);
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(seq));
+    OTIO_RELEASE(seq);
     seq = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -1937,6 +1969,7 @@ TEST_F(OTIOTrackTests, TrackRangeOfAllChildrenTest)
     strcat(edl_path, edl_file);
 
     Timeline*        timeline    = Timeline_create(NULL, NULL, NULL);
+    OTIO_RETAIN(timeline);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
     Any*             timelineAny = create_safely_typed_any_serializable_object(
         reinterpret_cast<OTIOSerializableObject*>(timeline));
@@ -2042,23 +2075,24 @@ TEST_F(OTIOTrackTests, TrackRangeOfAllChildrenTest)
     mp = NULL;
 
     Track* track = Track_create(NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(track);
     mp           = Track_range_of_all_children(track, errorStatus);
     EXPECT_EQ(MapComposableTimeRange_size(mp), 0);
     MapComposableTimeRange_destroy(mp);
     mp = NULL;
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(track));
+    OTIO_RELEASE(track);
     track = NULL;
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(timeline));
+    OTIO_RELEASE(timeline);
     timeline = NULL;
 }
 
 TEST_F(OTIOEdgeCases, EmptyCompositionsTest)
 {
-    Timeline*                 timeline = Timeline_create(NULL, NULL, NULL);
-    Stack*                    stack    = Timeline_tracks(timeline);
-    ComposableRetainerVector* children =
-        Composition_children((Composition*) stack);
+    Timeline* timeline = Timeline_create(NULL, NULL, NULL);
+    OTIO_RETAIN(timeline);
+    Stack*  stack    = Timeline_tracks(timeline);
+    ComposableRetainerVector* children = Composition_children((Composition*) stack);
     EXPECT_EQ(ComposableRetainerVector_size(children), 0);
 
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
@@ -2076,13 +2110,14 @@ TEST_F(OTIOEdgeCases, EmptyCompositionsTest)
     children = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(timeline));
+    OTIO_RELEASE(timeline);
     timeline = NULL;
 }
 
 TEST_F(OTIOEdgeCases, IteratingOverDupesTest)
 {
     Timeline*        timeline    = Timeline_create(NULL, NULL, NULL);
+    OTIO_RETAIN(timeline);
     Track*           track       = Track_create(NULL, NULL, NULL, NULL);
     Stack*           stack       = Timeline_tracks(timeline);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
@@ -2281,7 +2316,7 @@ TEST_F(OTIOEdgeCases, IteratingOverDupesTest)
     composableRetainerVector = NULL;
     ComposableVector_destroy(composableVector);
     composableVector = NULL;
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(timeline));
+    OTIO_RELEASE(timeline);
     timeline = NULL;
 }
 
@@ -2318,6 +2353,7 @@ TEST_F(OTIONestingTest, DeeplyNestedTest)
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     Timeline*         timeline = Timeline_create(NULL, NULL, NULL);
+    OTIO_RETAIN(timeline);
     Stack*            stack    = Timeline_tracks(timeline);
     Track*            track    = Track_create(NULL, NULL, NULL, NULL);
     Clip*             clip     = Clip_create(NULL, NULL, NULL, NULL);
@@ -2539,13 +2575,14 @@ TEST_F(OTIONestingTest, DeeplyNestedTest)
     RationalTime_destroy(last_plus_ten);
     last_plus_ten = NULL;
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(timeline));
+    OTIO_RELEASE(timeline);
     timeline = NULL;
 }
 
 TEST_F(OTIONestingTest, ChildAtTimeWithChildrenTest)
 {
     Track* sq = Track_create("foo", NULL, NULL, NULL);
+    OTIO_RETAIN(sq);
 
     RationalTime* start_time = RationalTime_create(9, 24);
     RationalTime* duration   = RationalTime_create(12, 24);
@@ -2714,4 +2751,6 @@ TEST_F(OTIONestingTest, ChildAtTimeWithChildrenTest)
     //
     //    }
     //TODO create child_at_time_function
+    
+    OTIO_RELEASE(sq);
 }

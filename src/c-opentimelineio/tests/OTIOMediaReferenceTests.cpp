@@ -31,8 +31,8 @@ TEST_F(OTIOMediaReferenceTests, ConstructorTest)
     AnyDictionaryIterator* it =
         AnyDictionary_insert(metadata, "show", value_any);
 
-    MissingReference* mr =
-        MissingReference_create(NULL, available_range, metadata);
+    MissingReference* mr = MissingReference_create(NULL, available_range, metadata);
+    OTIO_RETAIN(mr);
 
     TimeRange* mr_available_range =
         MediaReference_available_range((MediaReference*) mr);
@@ -52,13 +52,14 @@ TEST_F(OTIOMediaReferenceTests, ConstructorTest)
     value_any = NULL;
     AnyDictionaryIterator_destroy(it);
     it = NULL;
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(mr));
+    OTIO_RELEASE(mr);
     mr = NULL;
 
-    mr                 = MissingReference_create(NULL, NULL, NULL);
-    mr_available_range = MediaReference_available_range((MediaReference*) mr);
+    MissingReference* mr2                 = MissingReference_create(NULL, NULL, NULL);
+    OTIO_RETAIN(mr2);
+    mr_available_range = MediaReference_available_range((MediaReference*) mr2);
     EXPECT_EQ(mr_available_range, nullptr);
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(mr));
+    OTIO_RELEASE(mr2);
     mr = NULL;
 }
 
@@ -78,12 +79,13 @@ TEST_F(OTIOMediaReferenceTests, SerializationTest)
     ASSERT_TRUE(decoded_successfully);
 
     OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIO_RETAIN(decoded_object);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
         reinterpret_cast<OTIOSerializableObject*>(mr), decoded_object));
 
     Any_destroy(mr_any);
     mr_any = NULL;
-    SerializableObject_possibly_delete(decoded_object);
+    OTIO_RELEASE(decoded_object);
     decoded_object = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -107,12 +109,13 @@ TEST_F(OTIOMediaReferenceTests, FilepathTest)
     ASSERT_TRUE(decoded_successfully);
 
     OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIO_RETAIN(decoded_object);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
         reinterpret_cast<OTIOSerializableObject*>(filepath), decoded_object));
 
     Any_destroy(filepath_any);
     filepath_any = NULL;
-    SerializableObject_possibly_delete(decoded_object);
+    OTIO_RELEASE(decoded_object);
     decoded_object = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -122,37 +125,48 @@ TEST_F(OTIOMediaReferenceTests, EqualityTest)
 {
     ExternalReference* filepath =
         ExternalReference_create("var/tmp/foo.mov", NULL, NULL);
+    OTIO_RETAIN(filepath);
     ExternalReference* filepath2 =
         ExternalReference_create("var/tmp/foo.mov", NULL, NULL);
+    OTIO_RETAIN(filepath2);
 
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
         reinterpret_cast<OTIOSerializableObject*>(filepath), reinterpret_cast<OTIOSerializableObject*>(filepath2)));
+    OTIO_RELEASE(filepath2);
 
     MissingReference* bl = MissingReference_create(NULL, NULL, NULL);
+    OTIO_RETAIN(bl);
 
     EXPECT_FALSE(SerializableObject_is_equivalent_to(
         reinterpret_cast<OTIOSerializableObject*>(filepath), reinterpret_cast<OTIOSerializableObject*>(bl)));
 
-    filepath  = ExternalReference_create("var/tmp/foo.mov", NULL, NULL);
-    filepath2 = ExternalReference_create("var/tmp/foo2.mov", NULL, NULL);
+    OTIO_RELEASE(filepath);
+    OTIO_RELEASE(bl);
+
+    ExternalReference* filepath3 = ExternalReference_create("var/tmp/foo.mov", NULL, NULL);
+    OTIO_RETAIN(filepath3);
+    ExternalReference* filepath4 = ExternalReference_create("var/tmp/foo2.mov", NULL, NULL);
+    OTIO_RETAIN(filepath4);
 
     EXPECT_FALSE(SerializableObject_is_equivalent_to(
-        reinterpret_cast<OTIOSerializableObject*>(filepath),
-        reinterpret_cast<OTIOSerializableObject*>(filepath2)));
+        reinterpret_cast<OTIOSerializableObject*>(filepath3),
+        reinterpret_cast<OTIOSerializableObject*>(filepath4)));
+    OTIO_RELEASE(filepath3);
+    OTIO_RELEASE(filepath4);
 }
 
 TEST_F(OTIOMediaReferenceTests, IsMissingTest)
 {
-    ExternalReference* filepath =
-        ExternalReference_create("var/tmp/foo.mov", NULL, NULL);
-    EXPECT_FALSE(
-        MediaReference_is_missing_reference((MediaReference*) filepath));
+    ExternalReference* filepath = ExternalReference_create("var/tmp/foo.mov", NULL, NULL);
+    OTIO_RETAIN(filepath);
+    EXPECT_FALSE( MediaReference_is_missing_reference((MediaReference*) filepath));
 
     MissingReference* bl = MissingReference_create(NULL, NULL, NULL);
+    OTIO_RETAIN(bl);
     EXPECT_TRUE(MediaReference_is_missing_reference((MediaReference*) bl));
 
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(filepath));
+    OTIO_RELEASE(filepath);
     filepath = NULL;
-    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(bl));
+    OTIO_RELEASE(bl);
     bl = NULL;
 }

@@ -30,17 +30,25 @@ protected:
         bool decoded_successfully = deserialize_json_from_string(
             sample_track_str, decoded, errorStatus);
         OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
-        sample_track                       = (Track*) decoded_object;
+        sample_track = (Track*) decoded_object;
+        sample_track_r = RetainerSerializableObject_create(decoded_object);
 
         OTIOErrorStatus_destroy(errorStatus);
         errorStatus = NULL;
     }
     void TearDown() override
     {
-        Track_possibly_delete(sample_track);
-        sample_track = NULL;
+        if (sample_track_r)
+        {
+            RetainerSerializableObject_managed_destroy(sample_track_r);
+            sample_track = NULL;
+            sample_track_r = NULL;
+        }
     }
-    Track*      sample_track = NULL;
+
+    Track* sample_track = NULL;
+    RetainerSerializableObject* sample_track_r = NULL;
+    
     const char* sample_track_str =
         "{\n"
         "            \"OTIO_SCHEMA\": \"Track.1\",\n"
@@ -131,12 +139,12 @@ TEST_F(OTIOTrackAlgoTests, TrimToExistingRangeTest)
         Track_trimmed_range(sample_track, errorStatus);
     EXPECT_TRUE(TimeRange_equal(trimmed_range, sample_track_trimmed_range));
 
-    Track* trimmed_track =
-        track_trimmed_to_range(sample_track, trimmed_range, errorStatus);
+    OTIOSerializableObject* trimmed_track = reinterpret_cast<OTIOSerializableObject*>(
+        track_trimmed_to_range(sample_track, trimmed_range, errorStatus));
+    RetainerSerializableObject* trimmed_track_r = RetainerSerializableObject_create(trimmed_track);
 
     /* It shouldn't have changed at all */
-    EXPECT_TRUE(Track_is_equivalent_to(
-        sample_track, reinterpret_cast<OTIOSerializableObject*>(trimmed_track)));
+    EXPECT_TRUE(Track_is_equivalent_to(sample_track, trimmed_track));
 
     RationalTime_destroy(start);
     start = NULL;
@@ -146,7 +154,7 @@ TEST_F(OTIOTrackAlgoTests, TrimToExistingRangeTest)
     trimmed_range = NULL;
     TimeRange_destroy(sample_track_trimmed_range);
     sample_track_trimmed_range = NULL;
-    Track_possibly_delete(trimmed_track);
+    RetainerSerializableObject_managed_destroy(trimmed_track_r);
     trimmed_range = NULL;
 }
 
@@ -159,8 +167,8 @@ TEST_F(OTIOTrackAlgoTests, TrimToLongerRangeTest)
 
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
-    Track* trimmed_track =
-        track_trimmed_to_range(sample_track, trimmed_range, errorStatus);
+    Track* trimmed_track = track_trimmed_to_range(sample_track, trimmed_range, errorStatus);
+    RetainerSerializableObject* trimmed_track_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(trimmed_track));
 
     /* It shouldn't have changed at all */
     EXPECT_TRUE(Track_is_equivalent_to(
@@ -172,7 +180,7 @@ TEST_F(OTIOTrackAlgoTests, TrimToLongerRangeTest)
     duration = NULL;
     TimeRange_destroy(trimmed_range);
     trimmed_range = NULL;
-    Track_possibly_delete(trimmed_track);
+    RetainerSerializableObject_managed_destroy(trimmed_track_r);
     trimmed_range = NULL;
 }
 
@@ -188,6 +196,7 @@ TEST_F(OTIOTrackAlgoTests, TrimFrontTest)
     /* trim off the front (clip A and part of B) */
     Track* trimmed_track =
         track_trimmed_to_range(sample_track, trimmed_range, errorStatus);
+    RetainerSerializableObject* trimmed_track_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(trimmed_track));
 
     ComposableRetainerVector* trimmed_track_children =
         Track_children(trimmed_track);
@@ -264,7 +273,7 @@ TEST_F(OTIOTrackAlgoTests, TrimFrontTest)
     trimmed_range = NULL;
     ComposableRetainerVector_destroy(trimmed_track_children);
     trimmed_track_children = NULL;
-    Track_possibly_delete(trimmed_track);
+    RetainerSerializableObject_managed_destroy(trimmed_track_r);
     trimmed_range = NULL;
 }
 
@@ -280,6 +289,7 @@ TEST_F(OTIOTrackAlgoTests, TrimEndTest)
     /* trim off the front (clip C and part of B) */
     Track* trimmed_track =
         track_trimmed_to_range(sample_track, trimmed_range, errorStatus);
+    RetainerSerializableObject* trimmed_track_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(trimmed_track));
 
     ComposableRetainerVector* trimmed_track_children =
         Track_children(trimmed_track);
@@ -356,7 +366,7 @@ TEST_F(OTIOTrackAlgoTests, TrimEndTest)
     duration = NULL;
     TimeRange_destroy(trimmed_range);
     trimmed_range = NULL;
-    Track_possibly_delete(trimmed_track);
+    RetainerSerializableObject_managed_destroy(trimmed_track_r);
     trimmed_range = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -381,8 +391,8 @@ TEST_F(OTIOTrackAlgoTests, TrimWithTransitionsTest)
     sample_track_children    = NULL;
     RationalTime* in_offset  = RationalTime_create(12, 24);
     RationalTime* out_offset = RationalTime_create(20, 24);
-    Transition*   transition =
-        Transition_create(NULL, NULL, in_offset, out_offset, NULL);
+    Transition*   transition = Transition_create(NULL, NULL, in_offset, out_offset, NULL);
+    RetainerSerializableObject* transition_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(transition));
     /* add a transition */
     ASSERT_TRUE(Track_insert_child(
         sample_track, 1, (Composable*) transition, errorStatus));
@@ -404,6 +414,7 @@ TEST_F(OTIOTrackAlgoTests, TrimWithTransitionsTest)
         TimeRange_create_with_start_time_and_duration(start, duration);
     Track* trimmed_track =
         track_trimmed_to_range(sample_track, trimmed_range, errorStatus);
+    EXPECT_EQ(trimmed_track, (Track*)NULL);
     EXPECT_EQ(OTIOErrorStatus_get_outcome(errorStatus), 23);
     OTIOErrorStatus_destroy(errorStatus);
     RationalTime_destroy(start);
@@ -417,6 +428,7 @@ TEST_F(OTIOTrackAlgoTests, TrimWithTransitionsTest)
         TimeRange_create_with_start_time_and_duration(start, duration);
     trimmed_track =
         track_trimmed_to_range(sample_track, trimmed_range, errorStatus);
+    EXPECT_EQ(trimmed_track, (Track*)NULL);
     EXPECT_EQ(OTIOErrorStatus_get_outcome(errorStatus), 23);
     OTIOErrorStatus_destroy(errorStatus);
     RationalTime_destroy(start);
@@ -430,6 +442,7 @@ TEST_F(OTIOTrackAlgoTests, TrimWithTransitionsTest)
         TimeRange_create_with_start_time_and_duration(start, duration);
     trimmed_track =
         track_trimmed_to_range(sample_track, trimmed_range, errorStatus);
+    RetainerSerializableObject* trimmed_track_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(trimmed_track));
     EXPECT_FALSE(Track_is_equivalent_to(
         sample_track, reinterpret_cast<OTIOSerializableObject*>(trimmed_track)));
     RationalTime_destroy(start);
@@ -516,15 +529,16 @@ TEST_F(OTIOTrackAlgoTests, TrimWithTransitionsTest)
     ASSERT_TRUE(
         deserialize_json_from_string(expected_str, decodedAny, errorStatus));
     OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decodedAny);
+    RetainerSerializableObject* decoded_object_r = RetainerSerializableObject_create(decoded_object);
 
     EXPECT_TRUE(Track_is_equivalent_to(trimmed_track, decoded_object));
 
-    SerializableObject_possibly_delete(decoded_object);
+    RetainerSerializableObject_managed_destroy(decoded_object_r);
     decoded_object = NULL;
-    Track_possibly_delete(trimmed_track);
+    RetainerSerializableObject_managed_destroy(trimmed_track_r);
     trimmed_track = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
-    Transition_possibly_delete(transition);
+    RetainerSerializableObject_managed_destroy(transition_r);
     transition = NULL;
 }

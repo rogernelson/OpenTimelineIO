@@ -33,6 +33,7 @@ protected:
             deserialize_json_from_string(trackZStr, decoded, errorStatus);
         OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
         trackZ                             = (Track*) decoded_object;
+        trackZ_r = RetainerSerializableObject_create(decoded_object);
 
         /* trackABC */
         decoded = /* allocate memory for destinantion */
@@ -42,6 +43,7 @@ protected:
             deserialize_json_from_string(trackABCStr, decoded, errorStatus);
         decoded_object = safely_cast_retainer_any(decoded);
         trackABC       = (Track*) decoded_object;
+        trackABC_r = RetainerSerializableObject_create(decoded_object);
 
         /* trackDgE */
         decoded = /* allocate memory for destinantion */
@@ -51,6 +53,7 @@ protected:
             deserialize_json_from_string(trackDgEStr, decoded, errorStatus);
         decoded_object = safely_cast_retainer_any(decoded);
         trackDgE       = (Track*) decoded_object;
+        trackDgE_r = RetainerSerializableObject_create(decoded_object);
 
         /* trackgFg */
         decoded = /* allocate memory for destinantion */
@@ -60,6 +63,7 @@ protected:
             deserialize_json_from_string(trackgFgStr, decoded, errorStatus);
         decoded_object = safely_cast_retainer_any(decoded);
         trackgFg       = (Track*) decoded_object;
+        trackgFg_r = RetainerSerializableObject_create(decoded_object);
 
         OTIOErrorStatus_destroy(errorStatus);
         errorStatus = NULL;
@@ -68,11 +72,11 @@ protected:
     }
     void TearDown() override
     {
-        //        Track_possibly_delete(trackZ);
-        //        Track_possibly_delete(trackABC);
-        //        Track_possibly_delete(trackDgE);
-        //        Track_possibly_delete(trackgFg);
-        //        trackZ = trackABC = trackDgE = trackgFg = NULL;
+        RetainerSerializableObject_managed_destroy(trackZ_r);
+        RetainerSerializableObject_managed_destroy(trackABC_r);
+        RetainerSerializableObject_managed_destroy(trackDgE_r);
+        RetainerSerializableObject_managed_destroy(trackgFg_r);
+        trackZ = trackABC = trackDgE = trackgFg = NULL;
     }
 
     const char* sample_data_dir;
@@ -81,6 +85,10 @@ protected:
     Track* trackABC = NULL;
     Track* trackDgE = NULL;
     Track* trackgFg = NULL;
+    RetainerSerializableObject* trackZ_r = NULL;
+    RetainerSerializableObject* trackABC_r = NULL;
+    RetainerSerializableObject* trackDgE_r = NULL;
+    RetainerSerializableObject* trackgFg_r = NULL;
 
     const char* trackZStr =
         "{\n"
@@ -353,6 +361,7 @@ TEST_F(OTIOStackAlgoTests, FlattenSingleTrackTest)
         Stack_insert_child(stack, 0, (Composable*) trackABC, errorStatus));
 
     Track* flattenedStack = flatten_stack(stack, errorStatus);
+    OTIO_RETAIN(flattenedStack);
     Track_set_name(flattenedStack, "Sequence1");
     Any* s_any = create_safely_typed_any_serializable_object(
         reinterpret_cast<OTIOSerializableObject*>(flattenedStack));
@@ -362,17 +371,17 @@ TEST_F(OTIOStackAlgoTests, FlattenSingleTrackTest)
     EXPECT_TRUE(
         Track_is_equivalent_to(flattenedStack, reinterpret_cast<OTIOSerializableObject*>(trackABC)));
 
-    Track_possibly_delete(flattenedStack);
+    OTIO_RELEASE(flattenedStack);
     flattenedStack = NULL;
     OTIOErrorStatus_destroy(errorStatus);
 
     Stack_possibly_delete(stack);
     stack = NULL;
 
-    Track_possibly_delete(trackZ);
-    Track_possibly_delete(trackABC);
-    Track_possibly_delete(trackDgE);
-    Track_possibly_delete(trackgFg);
+    RetainerSerializableObject_managed_destroy(trackZ_r);
+    RetainerSerializableObject_managed_destroy(trackABC_r);
+    RetainerSerializableObject_managed_destroy(trackDgE_r);
+    RetainerSerializableObject_managed_destroy(trackgFg_r);
     trackZ = trackABC = trackDgE = trackgFg = NULL;
 }
 
@@ -409,10 +418,10 @@ TEST_F(OTIOStackAlgoTests, FlattenObscuredTrackTest)
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
-    Track_possibly_delete(trackZ);
-    Track_possibly_delete(trackABC);
-    Track_possibly_delete(trackDgE);
-    Track_possibly_delete(trackgFg);
+    RetainerSerializableObject_managed_destroy(trackZ_r);
+    RetainerSerializableObject_managed_destroy(trackABC_r);
+    RetainerSerializableObject_managed_destroy(trackDgE_r);
+    RetainerSerializableObject_managed_destroy(trackgFg_r);
     trackZ = trackABC = trackDgE = trackgFg = NULL;
 }
 
@@ -552,10 +561,10 @@ TEST_F(OTIOStackAlgoTests, FlattenGapsTest)
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
-    Track_possibly_delete(trackZ);
-    Track_possibly_delete(trackABC);
-    Track_possibly_delete(trackDgE);
-    Track_possibly_delete(trackgFg);
+    RetainerSerializableObject_managed_destroy(trackZ_r);
+    RetainerSerializableObject_managed_destroy(trackABC_r);
+    RetainerSerializableObject_managed_destroy(trackDgE_r);
+    RetainerSerializableObject_managed_destroy(trackgFg_r);
     trackZ = trackABC = trackDgE = trackgFg = NULL;
 }
 
@@ -708,10 +717,10 @@ TEST_F(OTIOStackAlgoTests, FlattenGapsWithTrimsTest)
     stack = NULL;
     Track_possibly_delete(flattenedStack);
     flattenedStack = NULL;
-    Track_possibly_delete(trackZ);
-    Track_possibly_delete(trackABC);
-    Track_possibly_delete(trackDgE);
-    Track_possibly_delete(trackgFg);
+    RetainerSerializableObject_managed_destroy(trackZ_r);
+    RetainerSerializableObject_managed_destroy(trackABC_r);
+    RetainerSerializableObject_managed_destroy(trackDgE_r);
+    RetainerSerializableObject_managed_destroy(trackgFg_r);
     trackZ = trackABC = trackDgE = trackgFg = NULL;
 }
 
@@ -842,10 +851,10 @@ TEST_F(OTIOStackAlgoTests, FlattenVectorOfTracksTest)
     flatTrack = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
-    Track_possibly_delete(trackZ);
-    Track_possibly_delete(trackABC);
-    Track_possibly_delete(trackDgE);
-    Track_possibly_delete(trackgFg);
+    RetainerSerializableObject_managed_destroy(trackZ_r);
+    RetainerSerializableObject_managed_destroy(trackABC_r);
+    RetainerSerializableObject_managed_destroy(trackDgE_r);
+    RetainerSerializableObject_managed_destroy(trackgFg_r);
     trackZ = trackABC = trackDgE = trackgFg = NULL;
 }
 
@@ -906,10 +915,10 @@ TEST_F(OTIOStackAlgoTests, FlattenExampleCodeTest)
     timeline_video_tracks = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
-    Track_possibly_delete(trackZ);
-    Track_possibly_delete(trackABC);
-    Track_possibly_delete(trackDgE);
-    Track_possibly_delete(trackgFg);
+    RetainerSerializableObject_managed_destroy(trackZ_r);
+    RetainerSerializableObject_managed_destroy(trackABC_r);
+    RetainerSerializableObject_managed_destroy(trackDgE_r);
+    RetainerSerializableObject_managed_destroy(trackgFg_r);
     trackZ = trackABC = trackDgE = trackgFg = NULL;
 }
 
@@ -967,9 +976,9 @@ TEST_F(OTIOStackAlgoTests, FlattenWithTransitionTest)
     transition = NULL;
     Stack_possibly_delete(stack);
     stack = NULL;
-    Track_possibly_delete(trackZ);
-    Track_possibly_delete(trackABC);
-    Track_possibly_delete(trackDgE);
-    Track_possibly_delete(trackgFg);
+    RetainerSerializableObject_managed_destroy(trackZ_r);
+    RetainerSerializableObject_managed_destroy(trackABC_r);
+    RetainerSerializableObject_managed_destroy(trackDgE_r);
+    RetainerSerializableObject_managed_destroy(trackgFg_r);
     trackZ = trackABC = trackDgE = trackgFg = NULL;
 }
