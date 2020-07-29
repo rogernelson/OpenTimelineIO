@@ -74,19 +74,19 @@ TEST_F(OTIOComposableTests, SerializeTest)
     Composable*            seqi =
         Composable_create_with_name_and_metadata("test", metadata);
     Any* seqi_any =
-        create_safely_typed_any_serializable_object((SerializableObject*) seqi);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(seqi));
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     const char* encoded = serialize_json_to_string(seqi_any, errorStatus, 4);
     Any*        decoded = /* allocate memory for destinantion */
-        create_safely_typed_any_serializable_object((SerializableObject*) seqi);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(seqi));
 
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
-    SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
 
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) seqi, decoded_object));
+        reinterpret_cast<OTIOSerializableObject*>(seqi), decoded_object));
 
     Any_destroy(value);
     value = NULL;

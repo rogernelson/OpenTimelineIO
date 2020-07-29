@@ -44,17 +44,17 @@ TEST_F(OTIOEffectTests, ConstructorTest)
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     Any* effect_any =
-        create_safely_typed_any_serializable_object((SerializableObject*) ef);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(ef));
     const char* encoded = serialize_json_to_string(effect_any, errorStatus, 4);
     Any*        decoded = /** allocate memory for destinantion */
-        create_safely_typed_any_serializable_object((SerializableObject*) ef);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(ef));
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
     ASSERT_TRUE(decoded_successfully);
 
-    SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) ef, decoded_object));
+        reinterpret_cast<OTIOSerializableObject*>(ef), decoded_object));
 
     EXPECT_STREQ(
         SerializableObjectWithMetadata_name(
@@ -88,7 +88,7 @@ TEST_F(OTIOEffectTests, ConstructorTest)
     Any_destroy(compare_any);
     compare_any = NULL;
 
-    SerializableObject_possibly_delete((SerializableObject*) ef);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(ef));
     ef = NULL;
     SerializableObject_possibly_delete(decoded_object);
     decoded_object = NULL;
@@ -106,7 +106,7 @@ TEST_F(OTIOEffectTests, EqTest)
     Effect* ef2 = Effect_create("blur it", "blur", metadata);
 
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) ef, (SerializableObject*) ef2));
+        reinterpret_cast<OTIOSerializableObject*>(ef), reinterpret_cast<OTIOSerializableObject*>(ef2)));
 
     AnyDictionaryIterator_destroy(it);
     it = NULL;
@@ -159,7 +159,7 @@ TEST_F(OTIOLinearTimeWarpTests, ConstructorTest)
     AnyDictionary_destroy(metadata);
     metadata = NULL;
 
-    SerializableObject_possibly_delete((SerializableObject*) ef);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(ef));
     ef = NULL;
 }
 
@@ -202,6 +202,6 @@ TEST_F(OTIOFreezeFrameTests, ConstructorTest)
     AnyDictionary_destroy(metadata);
     metadata = NULL;
 
-    SerializableObject_possibly_delete((SerializableObject*) ef);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(ef));
     ef = NULL;
 }

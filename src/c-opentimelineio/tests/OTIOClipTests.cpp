@@ -42,22 +42,23 @@ TEST_F(OTIOClipTests, ConstructorTest)
 
     MediaReference* media_reference = Clip_media_reference(clip);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) media_reference, (SerializableObject*) mr));
+        reinterpret_cast<OTIOSerializableObject*>(media_reference),
+        reinterpret_cast<OTIOSerializableObject*>(mr)));
 
     Any* clip_any =
-        create_safely_typed_any_serializable_object((SerializableObject*) clip);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(clip));
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     const char* encoded = serialize_json_to_string(clip_any, errorStatus, 4);
     Any*        decoded = /* allocate memory for destinantion */
-        create_safely_typed_any_serializable_object((SerializableObject*) clip);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(clip));
 
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
-    SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
 
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) clip, decoded_object));
+        reinterpret_cast<OTIOSerializableObject*>(clip), decoded_object));
 
     RationalTime_destroy(rt);
     rt = NULL;
@@ -138,7 +139,7 @@ TEST_F(OTIOClipTests, RangesTest)
     tr = NULL;
     RationalTime_destroy(tr_duration);
     tr_duration = NULL;
-    SerializableObject_possibly_delete((SerializableObject*) clip);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(clip));
     clip = NULL;
     RationalTime_destroy(start);
     start = NULL;
@@ -163,11 +164,11 @@ TEST_F(OTIOClipTests, RefDefaultTest)
         MissingReference_create(NULL, NULL, NULL);
     MediaReference* clip_media_reference = Clip_media_reference(clip);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) missing_reference,
-        (SerializableObject*) clip_media_reference));
+        reinterpret_cast<OTIOSerializableObject*>(missing_reference),
+        reinterpret_cast<OTIOSerializableObject*>(clip_media_reference)));
 
     SerializableObject_possibly_delete(
-        (SerializableObject*) clip_media_reference);
+        reinterpret_cast<OTIOSerializableObject*>(clip_media_reference));
     clip_media_reference = NULL;
 
     ExternalReference* external_reference =
@@ -175,9 +176,9 @@ TEST_F(OTIOClipTests, RefDefaultTest)
     Clip_set_media_reference(clip, (MediaReference*) external_reference);
     clip_media_reference = Clip_media_reference(clip);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) external_reference,
-        (SerializableObject*) clip_media_reference));
+        reinterpret_cast<OTIOSerializableObject*>(external_reference),
+        reinterpret_cast<OTIOSerializableObject*>(clip_media_reference)));
 
-    SerializableObject_possibly_delete((SerializableObject*) clip);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(clip));
     clip = NULL;
 }

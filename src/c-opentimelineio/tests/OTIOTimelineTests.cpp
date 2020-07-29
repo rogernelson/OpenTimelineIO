@@ -66,20 +66,20 @@ TEST_F(OTIOTimelineTests, MetadataTest)
     metadataResultValAny = NULL;
 
     Any* tl_any =
-        create_safely_typed_any_serializable_object((SerializableObject*) tl);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(tl));
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     const char* encoded = serialize_json_to_string(tl_any, errorStatus, 4);
     Any*        decoded = /* allocate memory for destinantion */
-        create_safely_typed_any_serializable_object((SerializableObject*) tl);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(tl));
 
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
     ASSERT_TRUE(decoded_successfully);
-    SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
 
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) tl, decoded_object));
+        reinterpret_cast<OTIOSerializableObject*>(tl), decoded_object));
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -173,19 +173,19 @@ TEST_F(OTIOTimelineTests, SerializeTest)
     Timeline_set_tracks(tl, stack);
 
     Any* tl_any =
-        create_safely_typed_any_serializable_object((SerializableObject*) tl);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(tl));
 
     const char* encoded = serialize_json_to_string(tl_any, errorStatus, 4);
     Any*        decoded = /* allocate memory for destinantion */
-        create_safely_typed_any_serializable_object((SerializableObject*) tl);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(tl));
 
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
     ASSERT_TRUE(decoded_successfully);
-    SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
 
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) tl, decoded_object));
+        reinterpret_cast<OTIOSerializableObject*>(tl), decoded_object));
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -213,18 +213,18 @@ TEST_F(OTIOTimelineTests, SerializationOfSubclassesTest)
     Timeline_set_tracks(tl, stack);
 
     Any* tl_any =
-        create_safely_typed_any_serializable_object((SerializableObject*) tl);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(tl));
 
     const char* serialized = serialize_json_to_string(tl_any, errorStatus, 4);
     EXPECT_TRUE(serialized != NULL);
 
     Any* decoded = /* allocate memory for destinantion */
-        create_safely_typed_any_serializable_object((SerializableObject*) tl);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(tl));
 
     bool deserialized_successfully =
         deserialize_json_from_string(serialized, decoded, errorStatus);
     ASSERT_TRUE(deserialized_successfully);
-    SerializableObject* deserialized_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* deserialized_object = safely_cast_retainer_any(decoded);
 
     Timeline* tl2 = (Timeline*) deserialized_object;
     EXPECT_TRUE(tl2 != NULL);
@@ -275,7 +275,7 @@ TEST_F(OTIOTimelineTests, SerializationOfSubclassesTest)
     MediaReference* clip1_mr = Clip_media_reference(clip1);
     MediaReference* clip2_mr = Clip_media_reference(clip2);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) clip1_mr, (SerializableObject*) clip2_mr));
+        reinterpret_cast<OTIOSerializableObject*>(clip1_mr), reinterpret_cast<OTIOSerializableObject*>(clip2_mr)));
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;

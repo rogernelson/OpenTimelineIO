@@ -93,19 +93,22 @@ add_library(copentimelineio STATIC
         ${OPENTIMELINEIO_HEADER_FILES})
 
 target_include_directories(copentimelineio PRIVATE
-        "${PROJECT_SOURCE_DIR}/src/c-opentimelineio/opentime-bindings/include"
-        "${PROJECT_SOURCE_DIR}/src/c-opentimelineio/opentimelineio-bindings/include")
+    "${PROJECT_SOURCE_DIR}/src"
+    "${PROJECT_SOURCE_DIR}/src/deps"
+    "${PROJECT_SOURCE_DIR}/src/deps/optional-lite/include"
+    "${PROJECT_SOURCE_DIR}/src/c-opentimelineio/opentime-bindings/include"
+    "${PROJECT_SOURCE_DIR}/src/c-opentimelineio/opentimelineio-bindings/include")
 
 target_link_libraries(copentimelineio opentime)
 target_link_libraries(copentimelineio opentimelineio)
 set_target_properties(copentimelineio PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib"
-        MACOSX_RPATH true WINDOWS_EXPORT_ALL_SYMBOLS true)
+    MACOSX_RPATH true WINDOWS_EXPORT_ALL_SYMBOLS true)
 
 
 if(OTIO_C_INSTALL)
-        install(TARGETS copentimelineio
-                RUNTIME DESTINATION bin
-                LIBRARY DESTINATION lib)
-        install(FILES ${OPENTIMELINEIO_HEADER_FILES} 
-                DESTINATION include/copentimelineio)
+    install(TARGETS copentimelineio
+            RUNTIME DESTINATION bin
+            LIBRARY DESTINATION lib)
+    install(FILES ${OPENTIMELINEIO_HEADER_FILES} 
+            DESTINATION include/copentimelineio)
 endif()

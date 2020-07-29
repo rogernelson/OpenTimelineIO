@@ -67,17 +67,17 @@ TEST_F(OTIOMarkerTests, ConstructorTest)
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     Any* marker_any =
-        create_safely_typed_any_serializable_object((SerializableObject*) m);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(m));
     const char* encoded = serialize_json_to_string(marker_any, errorStatus, 4);
     Any*        decoded = /** allocate memory for destinantion */
-        create_safely_typed_any_serializable_object((SerializableObject*) m);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(m));
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
     ASSERT_TRUE(decoded_successfully);
 
-    SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) m, decoded_object));
+        reinterpret_cast<OTIOSerializableObject*>(m), decoded_object));
 
     Any_destroy(marker_any);
     marker_any = NULL;
@@ -121,9 +121,9 @@ TEST_F(OTIOMarkerTests, UpgradeTest)
 
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
-    SerializableObject* so      = SerializableObject_create();
+    OTIOSerializableObject* so      = SerializableObject_create();
     Any*                decoded = /** allocate memory for destinantion */
-        create_safely_typed_any_serializable_object((SerializableObject*) so);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(so));
     bool decoded_successfully =
         deserialize_json_from_string(src, decoded, errorStatus);
     ASSERT_TRUE(decoded_successfully);
@@ -142,7 +142,7 @@ TEST_F(OTIOMarkerTests, UpgradeTest)
     range_compare = NULL;
     TimeRange_destroy(marked_range);
     marked_range = NULL;
-    SerializableObject_possibly_delete((SerializableObject*) marker);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(marker));
     marker = NULL;
 }
 
@@ -152,12 +152,12 @@ TEST_F(OTIOMarkerTests, EqualityTest)
     Item*   bo = Item_create(NULL, NULL, NULL, NULL, NULL);
 
     EXPECT_FALSE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) m, (SerializableObject*) bo));
+        reinterpret_cast<OTIOSerializableObject*>(m), reinterpret_cast<OTIOSerializableObject*>(bo)));
     EXPECT_FALSE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) bo, (SerializableObject*) m));
+        reinterpret_cast<OTIOSerializableObject*>(bo), reinterpret_cast<OTIOSerializableObject*>(m)));
 
-    SerializableObject_possibly_delete((SerializableObject*) bo);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(bo));
     bo = NULL;
-    SerializableObject_possibly_delete((SerializableObject*) m);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(m));
     m = NULL;
 }

@@ -32,20 +32,20 @@ TEST_F(OTIOGapTests, SerializeTest)
 {
     Gap* gap = Gap_create_with_duration(NULL, NULL, NULL, NULL, NULL);
     Any* gap_any =
-        create_safely_typed_any_serializable_object((SerializableObject*) gap);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(gap));
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     const char* encoded = serialize_json_to_string(gap_any, errorStatus, 4);
     Any*        decoded = /* allocate memory for destinantion */
-        create_safely_typed_any_serializable_object((SerializableObject*) gap);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(gap));
 
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
     ASSERT_TRUE(decoded_successfully);
-    SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
 
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) gap, decoded_object));
+        reinterpret_cast<OTIOSerializableObject*>(gap), decoded_object));
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -76,20 +76,20 @@ TEST_F(OTIOItemTests, ConstructorTest)
     duration = NULL;
 
     Any* item_any =
-        create_safely_typed_any_serializable_object((SerializableObject*) it);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(it));
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     const char* encoded = serialize_json_to_string(item_any, errorStatus, 4);
     Any*        decoded = /* allocate memory for destinantion */
-        create_safely_typed_any_serializable_object((SerializableObject*) it);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(it));
 
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
     ASSERT_TRUE(decoded_successfully);
-    SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
 
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) it, decoded_object));
+        reinterpret_cast<OTIOSerializableObject*>(it), decoded_object));
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -308,20 +308,20 @@ TEST_F(OTIOItemTests, MetadataTest)
     Item* item = Item_create(NULL, tr, metadata, NULL, NULL);
 
     Any* item_any =
-        create_safely_typed_any_serializable_object((SerializableObject*) item);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(item));
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     const char* encoded = serialize_json_to_string(item_any, errorStatus, 4);
     Any*        decoded = /* allocate memory for destinantion */
-        create_safely_typed_any_serializable_object((SerializableObject*) item);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(item));
 
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
     ASSERT_TRUE(decoded_successfully);
-    SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
 
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) item, decoded_object));
+        reinterpret_cast<OTIOSerializableObject*>(item), decoded_object));
 
     AnyDictionary* metadataResult = Item_metadata((Item*) decoded_object);
     AnyDictionaryIterator* metadataResultFooIt =
@@ -371,20 +371,20 @@ TEST_F(OTIOItemTests, MarkersTest)
     Item* item = Item_create(NULL, tr, NULL, NULL, markerVector);
 
     Any* item_any =
-        create_safely_typed_any_serializable_object((SerializableObject*) item);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(item));
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     const char* encoded = serialize_json_to_string(item_any, errorStatus, 4);
     Any*        decoded = /* allocate memory for destinantion */
-        create_safely_typed_any_serializable_object((SerializableObject*) item);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(item));
 
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
     ASSERT_TRUE(decoded_successfully);
-    SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
 
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) item, decoded_object));
+        reinterpret_cast<OTIOSerializableObject*>(item), decoded_object));
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -416,20 +416,20 @@ TEST_F(OTIOItemTests, EffectsTest)
     Item* item = Item_create(NULL, tr, NULL, effectVector, NULL);
 
     Any* item_any =
-        create_safely_typed_any_serializable_object((SerializableObject*) item);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(item));
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     const char* encoded = serialize_json_to_string(item_any, errorStatus, 4);
     Any*        decoded = /* allocate memory for destinantion */
-        create_safely_typed_any_serializable_object((SerializableObject*) item);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(item));
 
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
     ASSERT_TRUE(decoded_successfully);
-    SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
 
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) item, decoded_object));
+        reinterpret_cast<OTIOSerializableObject*>(item), decoded_object));
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;

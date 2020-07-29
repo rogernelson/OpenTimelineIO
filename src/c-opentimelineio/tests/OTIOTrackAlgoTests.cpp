@@ -29,7 +29,7 @@ protected:
                 SerializableObject_create());
         bool decoded_successfully = deserialize_json_from_string(
             sample_track_str, decoded, errorStatus);
-        SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+        OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
         sample_track                       = (Track*) decoded_object;
 
         OTIOErrorStatus_destroy(errorStatus);
@@ -136,7 +136,7 @@ TEST_F(OTIOTrackAlgoTests, TrimToExistingRangeTest)
 
     /* It shouldn't have changed at all */
     EXPECT_TRUE(Track_is_equivalent_to(
-        sample_track, (SerializableObject*) trimmed_track));
+        sample_track, reinterpret_cast<OTIOSerializableObject*>(trimmed_track)));
 
     RationalTime_destroy(start);
     start = NULL;
@@ -146,8 +146,8 @@ TEST_F(OTIOTrackAlgoTests, TrimToExistingRangeTest)
     trimmed_range = NULL;
     TimeRange_destroy(sample_track_trimmed_range);
     sample_track_trimmed_range = NULL;
-    //    Track_possibly_delete(trimmed_track); // TODO: fix segfault
-    //    trimmed_range = NULL;
+    Track_possibly_delete(trimmed_track);
+    trimmed_range = NULL;
 }
 
 TEST_F(OTIOTrackAlgoTests, TrimToLongerRangeTest)
@@ -164,7 +164,7 @@ TEST_F(OTIOTrackAlgoTests, TrimToLongerRangeTest)
 
     /* It shouldn't have changed at all */
     EXPECT_TRUE(Track_is_equivalent_to(
-        sample_track, (SerializableObject*) trimmed_track));
+        sample_track, reinterpret_cast<OTIOSerializableObject*>(trimmed_track)));
 
     RationalTime_destroy(start);
     start = NULL;
@@ -172,8 +172,8 @@ TEST_F(OTIOTrackAlgoTests, TrimToLongerRangeTest)
     duration = NULL;
     TimeRange_destroy(trimmed_range);
     trimmed_range = NULL;
-    //    Track_possibly_delete(trimmed_track); // TODO: fix segfault
-    //    trimmed_range = NULL;
+    Track_possibly_delete(trimmed_track);
+    trimmed_range = NULL;
 }
 
 TEST_F(OTIOTrackAlgoTests, TrimFrontTest)
@@ -246,7 +246,7 @@ TEST_F(OTIOTrackAlgoTests, TrimFrontTest)
         (Clip*) RetainerComposable_value(original_clipC_retainer);
 
     /* clip C should have been left alone */
-    EXPECT_TRUE(Clip_is_equivalent_to(C, (SerializableObject*) original_ClipC));
+    EXPECT_TRUE(Clip_is_equivalent_to(C, reinterpret_cast<OTIOSerializableObject*>(original_ClipC)));
 
     ComposableRetainerVectorIterator_destroy(sample_track_it);
     sample_track_it = NULL;
@@ -254,7 +254,7 @@ TEST_F(OTIOTrackAlgoTests, TrimFrontTest)
     sample_track_children = NULL;
 
     EXPECT_FALSE(Track_is_equivalent_to(
-        sample_track, (SerializableObject*) trimmed_track));
+        sample_track, reinterpret_cast<OTIOSerializableObject*>(trimmed_track)));
 
     RationalTime_destroy(start);
     start = NULL;
@@ -264,8 +264,8 @@ TEST_F(OTIOTrackAlgoTests, TrimFrontTest)
     trimmed_range = NULL;
     ComposableRetainerVector_destroy(trimmed_track_children);
     trimmed_track_children = NULL;
-    //    Track_possibly_delete(trimmed_track); // TODO: fix segfault
-    //    trimmed_range = NULL;
+    Track_possibly_delete(trimmed_track);
+    trimmed_range = NULL;
 }
 
 TEST_F(OTIOTrackAlgoTests, TrimEndTest)
@@ -331,7 +331,7 @@ TEST_F(OTIOTrackAlgoTests, TrimEndTest)
 
     /* clip A should have been left alone */
     EXPECT_TRUE(Composable_is_equivalent_to(
-        trimmed_0, (SerializableObject*) sample_track_0));
+        trimmed_0, reinterpret_cast<OTIOSerializableObject*>(sample_track_0)));
     /* did clip B get trimmed? */
     EXPECT_STREQ(Composable_name(trimmed_1), "B");
 
@@ -349,15 +349,15 @@ TEST_F(OTIOTrackAlgoTests, TrimEndTest)
     trimmed_track_trimmed_range_compare = NULL;
 
     EXPECT_FALSE(Track_is_equivalent_to(
-        sample_track, (SerializableObject*) trimmed_track));
+        sample_track, reinterpret_cast<OTIOSerializableObject*>(trimmed_track)));
     RationalTime_destroy(start);
     start = NULL;
     RationalTime_destroy(duration);
     duration = NULL;
     TimeRange_destroy(trimmed_range);
     trimmed_range = NULL;
-    //    Track_possibly_delete(trimmed_track); // TODO: fix segfault
-    //    trimmed_range = NULL;
+    Track_possibly_delete(trimmed_track);
+    trimmed_range = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
 }
@@ -431,7 +431,7 @@ TEST_F(OTIOTrackAlgoTests, TrimWithTransitionsTest)
     trimmed_track =
         track_trimmed_to_range(sample_track, trimmed_range, errorStatus);
     EXPECT_FALSE(Track_is_equivalent_to(
-        sample_track, (SerializableObject*) trimmed_track));
+        sample_track, reinterpret_cast<OTIOSerializableObject*>(trimmed_track)));
     RationalTime_destroy(start);
     start = NULL;
     RationalTime_destroy(duration);
@@ -515,7 +515,7 @@ TEST_F(OTIOTrackAlgoTests, TrimWithTransitionsTest)
             SerializableObject_create());
     ASSERT_TRUE(
         deserialize_json_from_string(expected_str, decodedAny, errorStatus));
-    SerializableObject* decoded_object = safely_cast_retainer_any(decodedAny);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decodedAny);
 
     EXPECT_TRUE(Track_is_equivalent_to(trimmed_track, decoded_object));
 

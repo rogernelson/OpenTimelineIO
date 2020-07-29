@@ -5,11 +5,18 @@
 namespace opentimelineio { namespace OPENTIMELINEIO_VERSION  {
     
 SerializableObject::SerializableObject()
-    : _cached_type_record(nullptr) {
-    _managed_ref_count = 0;
+: _cached_type_record(nullptr), _managed_ref_count(0)
+{
 }
 
-SerializableObject::~SerializableObject() {
+SerializableObject::~SerializableObject()
+{
+    // set a sentinel value to help debugging reference counts
+    if (_managed_ref_count != 0) {
+        fatal_error("Object with non-zero refcount is being deleted");
+    }
+
+    _managed_ref_count = 0xdeadbeef;
 }
 
 TypeRegistry::_TypeRecord const* SerializableObject::_type_record() const {

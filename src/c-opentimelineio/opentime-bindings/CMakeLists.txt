@@ -13,7 +13,8 @@ add_library(copentime STATIC
         ${OPENTIME_HEADER_FILES})
 
 target_include_directories(copentime PRIVATE
-        "${PROJECT_SOURCE_DIR}/src/c-opentimelineio/opentime-bindings/include")
+    "${PROJECT_SOURCE_DIR}/src"
+    "${PROJECT_SOURCE_DIR}/src/c-opentimelineio/opentime-bindings/include")
 
 target_link_libraries(copentime opentime)
 

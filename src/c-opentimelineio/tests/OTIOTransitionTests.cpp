@@ -45,7 +45,7 @@ TEST_F(OTIOTransitionTests, ConstructorTest)
     AnyDictionary_destroy(metadata_compare);
     metadata_compare = NULL;
 
-    SerializableObject_possibly_delete((SerializableObject*) trx);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(trx));
     trx = NULL;
     Any_destroy(value_any);
 }

@@ -81,7 +81,7 @@ protected:
         Stack*           wrapper = Stack_create(NULL, NULL, NULL, NULL, NULL);
 
         Clip* clip = (Clip*) SerializableObject_clone(
-            (SerializableObject*) item, errorStatus);
+            reinterpret_cast<OTIOSerializableObject*>(item), errorStatus);
 
         /* now put the item inside the wrapper */
         bool appendOK = Composition_append_child(
@@ -141,19 +141,19 @@ TEST_F(OTIOCompositionTests, ConstructorTest)
             RetainerComposable_take_value(retainerVectorElement);
 
         ASSERT_TRUE(SerializableObject_is_equivalent_to(
-            (SerializableObject*) composableVectorElement,
-            (SerializableObject*) retainerComposableValue));
+            reinterpret_cast<OTIOSerializableObject*>(composableVectorElement),
+            reinterpret_cast<OTIOSerializableObject*>(retainerComposableValue)));
 
         RetainerComposable_managed_destroy(retainerVectorElement);
         retainerVectorElement = NULL;
         SerializableObject_possibly_delete(
-            (SerializableObject*) composableVectorElement);
+            reinterpret_cast<OTIOSerializableObject*>(composableVectorElement));
         composableVectorElement = NULL;
     }
 
-    SerializableObject_possibly_delete((SerializableObject*) it);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(it));
     it = NULL;
-    SerializableObject_possibly_delete((SerializableObject*) co);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(co));
     co = NULL;
     ComposableVector_destroy(composableVector);
     OTIOErrorStatus_destroy(errorStatus);
@@ -173,7 +173,7 @@ TEST_F(OTIOCompositionTests, EqualityTest)
     Composition* co0  = Composition_create(NULL, NULL, NULL, NULL, NULL);
     Composition* co00 = Composition_create(NULL, NULL, NULL, NULL, NULL);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) co0, (SerializableObject*) co00));
+        reinterpret_cast<OTIOSerializableObject*>(co0), reinterpret_cast<OTIOSerializableObject*>(co00)));
 
     Item*             a   = Item_create("A", NULL, NULL, NULL, NULL);
     Item*             b   = Item_create("B", NULL, NULL, NULL, NULL);
@@ -218,7 +218,7 @@ TEST_F(OTIOCompositionTests, EqualityTest)
     composableVector = NULL;
 
     EXPECT_FALSE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) co1, (SerializableObject*) co2));
+        reinterpret_cast<OTIOSerializableObject*>(co1), reinterpret_cast<OTIOSerializableObject*>(co2)));
     /*EXPECT_TRUE(SerializableObject_is_equivalent_to( //TODO Fix Segfault
         (SerializableObject*) co1, (SerializableObject*) co3));*/
 
@@ -230,7 +230,7 @@ TEST_F(OTIOCompositionTests, EqualityTest)
     //    co1 = NULL;
     //    SerializableObject_possibly_delete((SerializableObject*) co2);
     //    co2 = NULL;
-    SerializableObject_possibly_delete((SerializableObject*) co3);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(co3));
     co3 = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -248,7 +248,7 @@ TEST_F(OTIOCompositionTests, IsParentOfTest)
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
-    SerializableObject_possibly_delete((SerializableObject*) co);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(co));
     co = NULL;
 }
 
@@ -263,7 +263,7 @@ TEST_F(OTIOCompositionTests, ParentManipTest)
     Composition* parent = Composable_parent((Composable*) it);
     EXPECT_EQ(parent, co);
 
-    SerializableObject_possibly_delete((SerializableObject*) co);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(co));
     co = NULL;
     ComposableVector_destroy(composableVector);
     composableVector = NULL;
@@ -291,7 +291,7 @@ TEST_F(OTIOCompositionTests, MoveChildTest)
     parent = Composable_parent((Composable*) it);
     EXPECT_EQ(parent, co2);
 
-    SerializableObject_possibly_delete((SerializableObject*) co);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(co));
     co = NULL;
     //    SerializableObject_possibly_delete((SerializableObject*) co2);
     //    co2 = NULL; //TODO Fix segfault
@@ -334,7 +334,7 @@ TEST_F(OTIOStackTests, ConstructorTest)
         SerializableObjectWithMetadata_name(
             (SerializableObjectWithMetadata*) st),
         "test");
-    SerializableObject_possibly_delete((SerializableObject*) st);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(st));
     st = NULL;
 }
 
@@ -348,19 +348,19 @@ TEST_F(OTIOStackTests, SerializeTest)
 
     ASSERT_TRUE(insertOK);
     Any* stack_any =
-        create_safely_typed_any_serializable_object((SerializableObject*) st);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(st));
     const char* encoded = serialize_json_to_string(stack_any, errorStatus, 4);
     Any*        decoded = /** allocate memory for destinantion */
-        create_safely_typed_any_serializable_object((SerializableObject*) st);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(st));
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
     ASSERT_TRUE(decoded_successfully);
 
-    SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) st, decoded_object));
+        reinterpret_cast<OTIOSerializableObject*>(st), decoded_object));
 
-    SerializableObject_possibly_delete((SerializableObject*) st);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(st));
     st = NULL;
     SerializableObject_possibly_delete(decoded_object);
     decoded_object = NULL;
@@ -464,9 +464,9 @@ TEST_F(OTIOStackTests, TrimChildRangeTest)
         TimeRange_destroy(st_trim_child_range);
         TimeRange_destroy(co_source_range);
     }
-    SerializableObject_possibly_delete((SerializableObject*) tr);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(tr));
     tr = NULL;
-    SerializableObject_possibly_delete((SerializableObject*) st);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(st));
     st = NULL;
 }
 
@@ -556,7 +556,7 @@ TEST_F(OTIOStackTests, RangeOfChildTest)
     range_at_1 = NULL;
     TimeRange_destroy(range_at_2);
     range_at_2 = NULL;
-    SerializableObject_possibly_delete((SerializableObject*) st);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(st));
     st = NULL;
 }
 
@@ -680,12 +680,12 @@ TEST_F(OTIOStackTests, RangeOfChildWithDurationTest)
     EXPECT_EQ(outcome, 18);
     TimeRange_destroy(errorTime);
     errorTime = NULL;
-    SerializableObject_possibly_delete((SerializableObject*) errorClip);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(errorClip));
     errorClip = NULL;
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
-    SerializableObject_possibly_delete((SerializableObject*) st);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(st));
     st = NULL;
 }
 
@@ -874,7 +874,7 @@ TEST_F(OTIOStackTests, TransformedTimeTest)
     RationalTime_destroy(test_time2);
     RationalTime_destroy(st_transformed_time);
 
-    SerializableObject_possibly_delete((SerializableObject*) st);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(st));
     st = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -885,19 +885,19 @@ TEST_F(OTIOTrackTests, SerializeTest)
     Track*           sq          = Track_create("foo", NULL, NULL, NULL);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
     Any*             sq_any =
-        create_safely_typed_any_serializable_object((SerializableObject*) sq);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(sq));
     const char* encoded = serialize_json_to_string(sq_any, errorStatus, 4);
     Any*        decoded = /** allocate memory for destinantion */
-        create_safely_typed_any_serializable_object((SerializableObject*) sq);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(sq));
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
     ASSERT_TRUE(decoded_successfully);
 
-    SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) sq, decoded_object));
+        reinterpret_cast<OTIOSerializableObject*>(sq), decoded_object));
 
-    SerializableObject_possibly_delete((SerializableObject*) sq);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
     sq = NULL;
     SerializableObject_possibly_delete(decoded_object);
     decoded_object = NULL;
@@ -926,7 +926,7 @@ TEST_F(OTIOTrackTests, InstancingTest)
     insertOK          = Composition_insert_child(
         (Composition*) test_track, 0, (Composable*) it, errorStatus);
     ASSERT_FALSE(insertOK);
-    SerializableObject_possibly_delete((SerializableObject*) test_track);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(test_track));
     test_track = NULL;
 
     /** Instancing is not allowed */
@@ -938,7 +938,7 @@ TEST_F(OTIOTrackTests, InstancingTest)
     insertOK   = Composition_set_children(
         (Composition*) test_track, composableVector, errorStatus);
     ASSERT_FALSE(insertOK);
-    SerializableObject_possibly_delete((SerializableObject*) test_track);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(test_track));
     test_track = NULL;
     ComposableVector_destroy(composableVector);
     composableVector = NULL;
@@ -962,7 +962,7 @@ TEST_F(OTIOTrackTests, InstancingTest)
     EXPECT_EQ(ComposableRetainerVector_size(composableRetainerVector), 1);
     ComposableRetainerVector_destroy(composableRetainerVector);
 
-    SerializableObject_possibly_delete((SerializableObject*) sq);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
     sq = NULL;
     RationalTime_destroy(length);
     length = NULL;
@@ -981,7 +981,7 @@ TEST_F(OTIOTrackTests, DeleteParentContainerTest)
     bool             insertOK    = Composition_insert_child(
         (Composition*) sq, 0, (Composable*) it, errorStatus);
     ASSERT_TRUE(insertOK);
-    SerializableObject_possibly_delete((SerializableObject*) sq);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
     sq                  = NULL;
     Composition* parent = Composable_parent((Composable*) it);
     EXPECT_EQ(parent, nullptr);
@@ -1184,7 +1184,7 @@ TEST_F(OTIOTrackTests, RangeTest)
     RationalTime_destroy(sq_duration);
     RationalTime_destroy(duration_compare);
 
-    SerializableObject_possibly_delete((SerializableObject*) sq);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
     sq = NULL;
 }
 
@@ -1339,7 +1339,7 @@ TEST_F(OTIOTrackTests, RangeOfChildTest)
 
     ComposableRetainerVector_destroy(composableRetainerVector);
     composableRetainerVector = NULL;
-    SerializableObject_possibly_delete((SerializableObject*) sq);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
     sq = NULL;
     RetainerComposable_managed_destroy(retainerComposable);
     retainerComposable = NULL;
@@ -1424,7 +1424,7 @@ TEST_F(OTIOTrackTests, RangeTrimmedOutTest)
     TimeRange_destroy(not_nothing);
     TimeRange_destroy(source_range);
 
-    SerializableObject_possibly_delete((SerializableObject*) sq);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
     sq = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -1505,7 +1505,7 @@ TEST_F(OTIOTrackTests, SetItemTest)
     composableRetainerVector = Composition_children((Composition*) sq);
     EXPECT_EQ(ComposableRetainerVector_size(composableRetainerVector), 1);
     ComposableRetainerVector_destroy(composableRetainerVector);
-    SerializableObject_possibly_delete((SerializableObject*) sq);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
     sq = NULL;
 }
 
@@ -1694,7 +1694,7 @@ TEST_F(OTIOTrackTests, TransformedTimeTest)
     RationalTime_destroy(transformed_time);
     RationalTime_destroy(compare_time);
 
-    SerializableObject_possibly_delete((SerializableObject*) sq);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
     sq = NULL;
 }
 
@@ -1742,15 +1742,15 @@ TEST_F(OTIOTrackTests, NeighborsOfSimpleTest)
     retainerComposable      = RetainerPairComposable_first(neighbors);
     retainerComposableValue = RetainerComposable_take_value(retainerComposable);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) retainerComposableValue,
-        (SerializableObject*) fill));
+        reinterpret_cast<OTIOSerializableObject*>(retainerComposableValue),
+        reinterpret_cast<OTIOSerializableObject*>(fill)));
     retainerComposable      = RetainerPairComposable_second(neighbors);
     retainerComposableValue = RetainerComposable_take_value(retainerComposable);
     //    EXPECT_TRUE(SerializableObject_is_equivalent_to( //TODO fix segfault
     //        (SerializableObject*) retainerComposableValue,
     //        (SerializableObject*) fill));
 
-    SerializableObject_possibly_delete((SerializableObject*) sq);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(sq));
     sq = NULL;
 }
 
@@ -1765,7 +1765,7 @@ TEST_F(OTIOTrackTests, NeighborsOfFromDataTest)
     Timeline*        timeline    = Timeline_create(NULL, NULL, NULL);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
     Any*             timelineAny = create_safely_typed_any_serializable_object(
-        (SerializableObject*) timeline);
+        reinterpret_cast<OTIOSerializableObject*>(timeline));
     bool deserializeOK =
         deserialize_json_from_file(edl_path, timelineAny, errorStatus);
     ASSERT_TRUE(deserializeOK);
@@ -1816,7 +1816,8 @@ TEST_F(OTIOTrackTests, NeighborsOfFromDataTest)
         RetainerComposable_take_value(secondRetainerComposable);
     EXPECT_EQ(firstComposable, nullptr);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) secondComposable, (SerializableObject*) seq_1));
+        reinterpret_cast<OTIOSerializableObject*>(secondComposable),
+        reinterpret_cast<OTIOSerializableObject*>(seq_1)));
 
     RetainerPairComposable_destroy(neighbors);
 
@@ -1837,9 +1838,11 @@ TEST_F(OTIOTrackTests, NeighborsOfFromDataTest)
     firstComposable  = RetainerComposable_take_value(firstRetainerComposable);
     secondComposable = RetainerComposable_take_value(secondRetainerComposable);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) firstComposable, (SerializableObject*) fill));
+        reinterpret_cast<OTIOSerializableObject*>(firstComposable),
+        reinterpret_cast<OTIOSerializableObject*>(fill)));
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) secondComposable, (SerializableObject*) seq_1));
+        reinterpret_cast<OTIOSerializableObject*>(secondComposable),
+        reinterpret_cast<OTIOSerializableObject*>(seq_1)));
     RationalTime_destroy(seq_0_in_offset);
     RationalTime_destroy(start_time);
     TimeRange_destroy(source_range);
@@ -1853,9 +1856,11 @@ TEST_F(OTIOTrackTests, NeighborsOfFromDataTest)
     firstComposable  = RetainerComposable_take_value(firstRetainerComposable);
     secondComposable = RetainerComposable_take_value(secondRetainerComposable);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) firstComposable, (SerializableObject*) seq_1));
+        reinterpret_cast<OTIOSerializableObject*>(firstComposable),
+        reinterpret_cast<OTIOSerializableObject*>(seq_1)));
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) secondComposable, (SerializableObject*) seq_3));
+        reinterpret_cast<OTIOSerializableObject*>(secondComposable),
+        reinterpret_cast<OTIOSerializableObject*>(seq_3)));
 
     RetainerPairComposable_destroy(neighbors);
 
@@ -1870,9 +1875,11 @@ TEST_F(OTIOTrackTests, NeighborsOfFromDataTest)
     firstComposable  = RetainerComposable_take_value(firstRetainerComposable);
     secondComposable = RetainerComposable_take_value(secondRetainerComposable);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) firstComposable, (SerializableObject*) seq_1));
+        reinterpret_cast<OTIOSerializableObject*>(firstComposable),
+        reinterpret_cast<OTIOSerializableObject*>(seq_1)));
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) secondComposable, (SerializableObject*) seq_3));
+        reinterpret_cast<OTIOSerializableObject*>(secondComposable),
+        reinterpret_cast<OTIOSerializableObject*>(seq_3)));
 
     RetainerPairComposable_destroy(neighbors);
 
@@ -1884,7 +1891,8 @@ TEST_F(OTIOTrackTests, NeighborsOfFromDataTest)
     firstComposable  = RetainerComposable_take_value(firstRetainerComposable);
     secondComposable = RetainerComposable_take_value(secondRetainerComposable);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) firstComposable, (SerializableObject*) seq_4));
+        reinterpret_cast<OTIOSerializableObject*>(firstComposable),
+        reinterpret_cast<OTIOSerializableObject*>(seq_4)));
     EXPECT_EQ(secondComposable, nullptr);
 
     RetainerPairComposable_destroy(neighbors);
@@ -1904,15 +1912,17 @@ TEST_F(OTIOTrackTests, NeighborsOfFromDataTest)
     firstComposable  = RetainerComposable_take_value(firstRetainerComposable);
     secondComposable = RetainerComposable_take_value(secondRetainerComposable);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) firstComposable, (SerializableObject*) seq_4));
+        reinterpret_cast<OTIOSerializableObject*>(firstComposable),
+        reinterpret_cast<OTIOSerializableObject*>(seq_4)));
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) secondComposable, (SerializableObject*) fill));
+        reinterpret_cast<OTIOSerializableObject*>(secondComposable),
+        reinterpret_cast<OTIOSerializableObject*>(fill)));
     RationalTime_destroy(seq_5_out_offset);
     RationalTime_destroy(start_time);
     TimeRange_destroy(source_range);
     RetainerPairComposable_destroy(neighbors);
 
-    SerializableObject_possibly_delete((SerializableObject*) seq);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(seq));
     seq = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -1929,7 +1939,7 @@ TEST_F(OTIOTrackTests, TrackRangeOfAllChildrenTest)
     Timeline*        timeline    = Timeline_create(NULL, NULL, NULL);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
     Any*             timelineAny = create_safely_typed_any_serializable_object(
-        (SerializableObject*) timeline);
+        reinterpret_cast<OTIOSerializableObject*>(timeline));
     bool deserializeOK =
         deserialize_json_from_file(edl_path, timelineAny, errorStatus);
     ASSERT_TRUE(deserializeOK);
@@ -2036,10 +2046,10 @@ TEST_F(OTIOTrackTests, TrackRangeOfAllChildrenTest)
     EXPECT_EQ(MapComposableTimeRange_size(mp), 0);
     MapComposableTimeRange_destroy(mp);
     mp = NULL;
-    SerializableObject_possibly_delete((SerializableObject*) track);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(track));
     track = NULL;
 
-    SerializableObject_possibly_delete((SerializableObject*) timeline);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(timeline));
     timeline = NULL;
 }
 
@@ -2066,7 +2076,7 @@ TEST_F(OTIOEdgeCases, EmptyCompositionsTest)
     children = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
-    SerializableObject_possibly_delete((SerializableObject*) timeline);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(timeline));
     timeline = NULL;
 }
 
@@ -2271,7 +2281,7 @@ TEST_F(OTIOEdgeCases, IteratingOverDupesTest)
     composableRetainerVector = NULL;
     ComposableVector_destroy(composableVector);
     composableVector = NULL;
-    SerializableObject_possibly_delete((SerializableObject*) timeline);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(timeline));
     timeline = NULL;
 }
 
@@ -2529,7 +2539,7 @@ TEST_F(OTIONestingTest, DeeplyNestedTest)
     RationalTime_destroy(last_plus_ten);
     last_plus_ten = NULL;
 
-    SerializableObject_possibly_delete((SerializableObject*) timeline);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(timeline));
     timeline = NULL;
 }
 

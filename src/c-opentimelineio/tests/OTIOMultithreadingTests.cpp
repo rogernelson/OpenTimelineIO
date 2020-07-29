@@ -1,10 +1,9 @@
 #include "gtest/gtest.h"
 
+#include <opentimelineio/serializableCollection.h>
 #include <copentimelineio/errorStatus.h>
 #include <copentimelineio/serializableCollection.h>
 #include <copentimelineio/serializableObject.h>
-#include <opentimelineio/serializableCollection.h>
-#include <opentimelineio/serializableObject.h>
 #include <pthread.h>
 
 class OTIOMultithreadingTests : public ::testing::Test
@@ -38,7 +37,7 @@ protected:
 
 TEST_F(OTIOMultithreadingTests, Test1)
 {
-    SerializableObject*       child = SerializableObject_create();
+    OTIOSerializableObject*       child = SerializableObject_create();
     SerializableObjectVector* childrenVector =
         SerializableObjectVector_create();
     SerializableObjectVector_push_back(childrenVector, child);

@@ -52,13 +52,13 @@ TEST_F(OTIOMediaReferenceTests, ConstructorTest)
     value_any = NULL;
     AnyDictionaryIterator_destroy(it);
     it = NULL;
-    SerializableObject_possibly_delete((SerializableObject*) mr);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(mr));
     mr = NULL;
 
     mr                 = MissingReference_create(NULL, NULL, NULL);
     mr_available_range = MediaReference_available_range((MediaReference*) mr);
     EXPECT_EQ(mr_available_range, nullptr);
-    SerializableObject_possibly_delete((SerializableObject*) mr);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(mr));
     mr = NULL;
 }
 
@@ -69,17 +69,17 @@ TEST_F(OTIOMediaReferenceTests, SerializationTest)
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     Any* mr_any =
-        create_safely_typed_any_serializable_object((SerializableObject*) mr);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(mr));
     const char* encoded = serialize_json_to_string(mr_any, errorStatus, 4);
     Any*        decoded = /** allocate memory for destinantion */
-        create_safely_typed_any_serializable_object((SerializableObject*) mr);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(mr));
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
     ASSERT_TRUE(decoded_successfully);
 
-    SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) mr, decoded_object));
+        reinterpret_cast<OTIOSerializableObject*>(mr), decoded_object));
 
     Any_destroy(mr_any);
     mr_any = NULL;
@@ -96,19 +96,19 @@ TEST_F(OTIOMediaReferenceTests, FilepathTest)
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     Any* filepath_any = create_safely_typed_any_serializable_object(
-        (SerializableObject*) filepath);
+        reinterpret_cast<OTIOSerializableObject*>(filepath));
     const char* encoded =
         serialize_json_to_string(filepath_any, errorStatus, 4);
     Any* decoded = /** allocate memory for destinantion */
         create_safely_typed_any_serializable_object(
-            (SerializableObject*) filepath);
+            reinterpret_cast<OTIOSerializableObject*>(filepath));
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
     ASSERT_TRUE(decoded_successfully);
 
-    SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) filepath, decoded_object));
+        reinterpret_cast<OTIOSerializableObject*>(filepath), decoded_object));
 
     Any_destroy(filepath_any);
     filepath_any = NULL;
@@ -126,18 +126,19 @@ TEST_F(OTIOMediaReferenceTests, EqualityTest)
         ExternalReference_create("var/tmp/foo.mov", NULL, NULL);
 
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) filepath, (SerializableObject*) filepath2));
+        reinterpret_cast<OTIOSerializableObject*>(filepath), reinterpret_cast<OTIOSerializableObject*>(filepath2)));
 
     MissingReference* bl = MissingReference_create(NULL, NULL, NULL);
 
     EXPECT_FALSE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) filepath, (SerializableObject*) bl));
+        reinterpret_cast<OTIOSerializableObject*>(filepath), reinterpret_cast<OTIOSerializableObject*>(bl)));
 
     filepath  = ExternalReference_create("var/tmp/foo.mov", NULL, NULL);
     filepath2 = ExternalReference_create("var/tmp/foo2.mov", NULL, NULL);
 
     EXPECT_FALSE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) filepath, (SerializableObject*) filepath2));
+        reinterpret_cast<OTIOSerializableObject*>(filepath),
+        reinterpret_cast<OTIOSerializableObject*>(filepath2)));
 }
 
 TEST_F(OTIOMediaReferenceTests, IsMissingTest)
@@ -150,8 +151,8 @@ TEST_F(OTIOMediaReferenceTests, IsMissingTest)
     MissingReference* bl = MissingReference_create(NULL, NULL, NULL);
     EXPECT_TRUE(MediaReference_is_missing_reference((MediaReference*) bl));
 
-    SerializableObject_possibly_delete((SerializableObject*) filepath);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(filepath));
     filepath = NULL;
-    SerializableObject_possibly_delete((SerializableObject*) bl);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(bl));
     bl = NULL;
 }

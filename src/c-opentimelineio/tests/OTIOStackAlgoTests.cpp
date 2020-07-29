@@ -31,7 +31,7 @@ protected:
                 SerializableObject_create());
         bool decoded_successfully =
             deserialize_json_from_string(trackZStr, decoded, errorStatus);
-        SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+        OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
         trackZ                             = (Track*) decoded_object;
 
         /* trackABC */
@@ -355,12 +355,12 @@ TEST_F(OTIOStackAlgoTests, FlattenSingleTrackTest)
     Track* flattenedStack = flatten_stack(stack, errorStatus);
     Track_set_name(flattenedStack, "Sequence1");
     Any* s_any = create_safely_typed_any_serializable_object(
-        (SerializableObject*) flattenedStack);
+        reinterpret_cast<OTIOSerializableObject*>(flattenedStack));
 
     EXPECT_NE(flattenedStack, trackABC);
 
     EXPECT_TRUE(
-        Track_is_equivalent_to(flattenedStack, (SerializableObject*) trackABC));
+        Track_is_equivalent_to(flattenedStack, reinterpret_cast<OTIOSerializableObject*>(trackABC)));
 
     Track_possibly_delete(flattenedStack);
     flattenedStack = NULL;
@@ -389,10 +389,10 @@ TEST_F(OTIOStackAlgoTests, FlattenObscuredTrackTest)
     Track_set_name(flattenedStack, "Sequence1");
     EXPECT_NE(flattenedStack, trackZ);
     EXPECT_TRUE(
-        Track_is_equivalent_to(flattenedStack, (SerializableObject*) trackZ));
+        Track_is_equivalent_to(flattenedStack, reinterpret_cast<OTIOSerializableObject*>(trackZ)));
 
-    //    Track_possibly_delete(flattenedStack); // TODO: Fix segafault
-    //    flattenedStack = NULL;
+    Track_possibly_delete(flattenedStack);
+    flattenedStack = NULL;
     Stack_possibly_delete(stack);
     stack = NULL;
 
@@ -405,7 +405,7 @@ TEST_F(OTIOStackAlgoTests, FlattenObscuredTrackTest)
     Track_set_name(flattenedStack, "Sequence1");
     EXPECT_NE(flattenedStack, trackABC);
     EXPECT_TRUE(
-        Track_is_equivalent_to(flattenedStack, (SerializableObject*) trackABC));
+        Track_is_equivalent_to(flattenedStack, reinterpret_cast<OTIOSerializableObject*>(trackABC)));
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -489,14 +489,14 @@ TEST_F(OTIOStackAlgoTests, FlattenGapsTest)
     EXPECT_NE(flattenedStack_1, trackABC_1);
     EXPECT_NE(flattenedStack_2, trackDgE_2);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) flattenedStack_0,
-        (SerializableObject*) trackDgE_0));
+        reinterpret_cast<OTIOSerializableObject*>(flattenedStack_0),
+        reinterpret_cast<OTIOSerializableObject*>(trackDgE_0)));
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) flattenedStack_1,
-        (SerializableObject*) trackABC_1));
+        reinterpret_cast<OTIOSerializableObject*>(flattenedStack_1),
+        reinterpret_cast<OTIOSerializableObject*>(trackABC_1)));
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) flattenedStack_2,
-        (SerializableObject*) trackDgE_2));
+        reinterpret_cast<OTIOSerializableObject*>(flattenedStack_2),
+        reinterpret_cast<OTIOSerializableObject*>(trackDgE_2)));
 
     Stack_possibly_delete(stack);
     stack = Stack_create(NULL, NULL, NULL, NULL, NULL);
@@ -541,14 +541,14 @@ TEST_F(OTIOStackAlgoTests, FlattenGapsTest)
     EXPECT_NE(flattenedStack_1, trackgFg_1);
     EXPECT_NE(flattenedStack_2, trackABC_2);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) flattenedStack_0,
-        (SerializableObject*) trackABC_0));
+        reinterpret_cast<OTIOSerializableObject*>(flattenedStack_0),
+        reinterpret_cast<OTIOSerializableObject*>(trackABC_0)));
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) flattenedStack_1,
-        (SerializableObject*) trackgFg_1));
+        reinterpret_cast<OTIOSerializableObject*>(flattenedStack_1),
+        reinterpret_cast<OTIOSerializableObject*>(trackgFg_1)));
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) flattenedStack_2,
-        (SerializableObject*) trackABC_2));
+        reinterpret_cast<OTIOSerializableObject*>(flattenedStack_2),
+        reinterpret_cast<OTIOSerializableObject*>(trackABC_2)));
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -609,8 +609,8 @@ TEST_F(OTIOStackAlgoTests, FlattenGapsWithTrimsTest)
     ComposableRetainerVectorIterator_destroy(trackDgEIt);
     trackDgEIt = NULL;
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) flattenedStack_0,
-        (SerializableObject*) trackDgE_0));
+        reinterpret_cast<OTIOSerializableObject*>(flattenedStack_0),
+        reinterpret_cast<OTIOSerializableObject*>(trackDgE_0)));
     EXPECT_STREQ(Composable_name(flattenedStack_1), "Z");
     RationalTime* start    = RationalTime_create(50, 24);
     RationalTime* duration = RationalTime_create(50, 24);
@@ -620,8 +620,8 @@ TEST_F(OTIOStackAlgoTests, FlattenGapsWithTrimsTest)
         Clip_source_range((Clip*) flattenedStack_1);
     EXPECT_TRUE(TimeRange_equal(tr, flattenedStack_1_source_range));
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) flattenedStack_2,
-        (SerializableObject*) trackDgE_2));
+        reinterpret_cast<OTIOSerializableObject*>(flattenedStack_2),
+        reinterpret_cast<OTIOSerializableObject*>(trackDgE_2)));
     TimeRange_destroy(tr);
     TimeRange_destroy(flattenedStack_1_source_range);
     RationalTime_destroy(start);
@@ -685,8 +685,8 @@ TEST_F(OTIOStackAlgoTests, FlattenGapsWithTrimsTest)
     start = NULL;
 
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) flattenedStack_1,
-        (SerializableObject*) trackgFg_1));
+        reinterpret_cast<OTIOSerializableObject*>(flattenedStack_1),
+        reinterpret_cast<OTIOSerializableObject*>(trackgFg_1)));
     EXPECT_STREQ(Composable_name(flattenedStack_2), "Z");
     start = RationalTime_create(100, 24);
     tr    = TimeRange_create_with_start_time_and_duration(start, duration);
@@ -791,11 +791,14 @@ TEST_F(OTIOStackAlgoTests, FlattenVectorOfTracksTest)
     flatTrackIt = NULL;
 
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) flatTrack_0, (SerializableObject*) trackDgE_0));
+        reinterpret_cast<OTIOSerializableObject*>(flatTrack_0),
+        reinterpret_cast<OTIOSerializableObject*>(trackDgE_0)));
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) flatTrack_1, (SerializableObject*) trackABC_1));
+        reinterpret_cast<OTIOSerializableObject*>(flatTrack_1),
+        reinterpret_cast<OTIOSerializableObject*>(trackABC_1)));
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) flatTrack_2, (SerializableObject*) trackDgE_2));
+        reinterpret_cast<OTIOSerializableObject*>(flatTrack_2),
+        reinterpret_cast<OTIOSerializableObject*>(trackDgE_2)));
 
     TrackVector_destroy(tracks);
     tracks = NULL;
@@ -824,11 +827,14 @@ TEST_F(OTIOStackAlgoTests, FlattenVectorOfTracksTest)
     flatTrackIt = NULL;
 
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) flatTrack_0, (SerializableObject*) trackABC_0));
+        reinterpret_cast<OTIOSerializableObject*>(flatTrack_0),
+        reinterpret_cast<OTIOSerializableObject*>(trackABC_0)));
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) flatTrack_1, (SerializableObject*) trackgFg_1));
+        reinterpret_cast<OTIOSerializableObject*>(flatTrack_1),
+        reinterpret_cast<OTIOSerializableObject*>(trackgFg_1)));
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) flatTrack_2, (SerializableObject*) trackABC_2));
+        reinterpret_cast<OTIOSerializableObject*>(flatTrack_2),
+        reinterpret_cast<OTIOSerializableObject*>(trackABC_2)));
 
     TrackVector_destroy(tracks);
     tracks = NULL;
@@ -894,7 +900,7 @@ TEST_F(OTIOStackAlgoTests, FlattenExampleCodeTest)
     Track_set_name(flattened_track, "");
 
     EXPECT_TRUE(Track_is_equivalent_to(
-        preflattened_track, (SerializableObject*) flattened_track));
+        preflattened_track, reinterpret_cast<OTIOSerializableObject*>(flattened_track)));
 
     TrackVector_destroy(timeline_video_tracks);
     timeline_video_tracks = NULL;

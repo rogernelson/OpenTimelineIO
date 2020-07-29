@@ -23,7 +23,7 @@ protected:
         OTIOErrorStatus_destroy(errorStatus);
     }
     void TearDown() override { SerializableObject_possibly_delete(schema); }
-    SerializableObject* schema = NULL;
+    OTIOSerializableObject* schema = NULL;
     const char*         has_undefined_schema =
         "{\n"
         "    \"OTIO_SCHEMA\": \"Clip.1\",\n"
@@ -74,7 +74,7 @@ TEST_F(OTIOUnknownSchemaTests, SerializeDeserializeTest)
         create_safely_typed_any_serializable_object(schema);
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
-    SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(schema, decoded_object));
     SerializableObject_possibly_delete(decoded_object);
     decoded_object = NULL;
@@ -89,6 +89,6 @@ TEST_F(OTIOUnknownSchemaTests, IsUnknownSchemaTest)
     AnyDictionary*         metadata = MediaReference_metadata(mediaReference);
     AnyDictionaryIterator* it       = AnyDictionary_find(metadata, "stuff");
     Any*                   any      = AnyDictionaryIterator_value(it);
-    SerializableObject*    serializableObject = safely_cast_retainer_any(any);
+    OTIOSerializableObject*    serializableObject = safely_cast_retainer_any(any);
     EXPECT_TRUE(SerializableObject_is_unknown_schema(serializableObject));
 }

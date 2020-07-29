@@ -45,6 +45,9 @@ set(TESTS
 foreach(TEST ${TESTS})
     add_executable(C${TEST} ${TEST}.cpp)
     target_include_directories(C${TEST} PRIVATE
+        "${PROJECT_SOURCE_DIR}/src"
+        "${PROJECT_SOURCE_DIR}/src/deps"
+        "${PROJECT_SOURCE_DIR}/src/deps/optional-lite/include"
         "${PROJECT_SOURCE_DIR}/src/c-opentimelineio/opentime-bindings/include"
         "${PROJECT_SOURCE_DIR}/src/c-opentimelineio/opentimelineio-bindings/include/")
     target_link_libraries(C${TEST} PUBLIC

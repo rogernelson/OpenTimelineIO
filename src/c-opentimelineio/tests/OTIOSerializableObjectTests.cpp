@@ -128,23 +128,21 @@ TEST_F(SerializableObjectTests, ConstructorTest)
 
 TEST_F(SerializableObjectTests, EqualityTest)
 {
-    SerializableObject* o1 = SerializableObject_create();
-    SerializableObject* o2 = SerializableObject_create();
-
+    OTIOSerializableObject* o1 = SerializableObject_create();
+    OTIOSerializableObject* o2 = SerializableObject_create();
     EXPECT_NE(o1, o2);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(o1, o2));
 
-    //    SerializableObject_possibly_delete(o1); // TODO: Fix segfault
-    //    o1 = NULL;
-    //    SerializableObject_possibly_delete(o2);
-    //    o2 = NULL;
+    SerializableObject_possibly_delete(o1);
+    o1 = NULL;
+    SerializableObject_possibly_delete(o2);
+    o2 = NULL;
 }
 
 TEST_F(SerializableObjectTests, EquivalenceSymmetryTest)
 {
     Composable* A = Composable_create();
     Composable* B = Composable_create();
-    //    EXPECT_TRUE(Composable_is_equivalent_to(A, (SerializableObject*) B));
-    //    EXPECT_TRUE(Composable_is_equivalent_to(B, (SerializableObject*) A));
-    // TODO: Fix segfault
+    EXPECT_TRUE(Composable_is_equivalent_to(A, (OTIOSerializableObject*) B));
+    EXPECT_TRUE(Composable_is_equivalent_to(B, (OTIOSerializableObject*) A));
 }

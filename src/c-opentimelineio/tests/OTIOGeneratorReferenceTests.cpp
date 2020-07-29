@@ -67,7 +67,7 @@ protected:
     }
     void TearDown() override
     {
-        SerializableObject_possibly_delete((SerializableObject*) gen);
+        SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(gen));
         gen = NULL;
     }
 
@@ -146,17 +146,17 @@ TEST_F(OTIOGeneratorReferenceTests, SerializeTest)
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     Any* ref_any =
-        create_safely_typed_any_serializable_object((SerializableObject*) gen);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(gen));
     const char* encoded = serialize_json_to_string(ref_any, errorStatus, 4);
     Any*        decoded = /** allocate memory for destinantion */
-        create_safely_typed_any_serializable_object((SerializableObject*) gen);
+        create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(gen));
     bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
     ASSERT_TRUE(decoded_successfully);
 
-    SerializableObject* decoded_object = safely_cast_retainer_any(decoded);
+    OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
-        (SerializableObject*) gen, decoded_object));
+        reinterpret_cast<OTIOSerializableObject*>(gen), decoded_object));
 
     Any_destroy(decoded);
     decoded = NULL;
@@ -174,7 +174,7 @@ TEST_F(OTIOGeneratorReferenceTests, ReadFileTest)
 
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
-    SerializableObject* so = SerializableObject_create();
+    OTIOSerializableObject* so = SerializableObject_create();
 
     Any* ref_any = create_safely_typed_any_serializable_object(so);
     bool deserializeOK =
@@ -210,7 +210,7 @@ TEST_F(OTIOGeneratorReferenceTests, ReadFileTest)
     children_retainer_vector = NULL;
     ComposableRetainerVector_destroy(track_retainer_vector);
     track_retainer_vector = NULL;
-    SerializableObject_possibly_delete((SerializableObject*) timeline);
+    SerializableObject_possibly_delete(reinterpret_cast<OTIOSerializableObject*>(timeline));
     timeline = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
