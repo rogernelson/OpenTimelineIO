@@ -32,7 +32,7 @@ protected:
         bool decoded_successfully =
             deserialize_json_from_string(trackZStr, decoded, errorStatus);
         OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
-        trackZ                             = (Track*) decoded_object;
+        trackZ = (Track*) decoded_object;
         trackZ_r = RetainerSerializableObject_create(decoded_object);
 
         /* trackABC */
@@ -42,7 +42,7 @@ protected:
         decoded_successfully =
             deserialize_json_from_string(trackABCStr, decoded, errorStatus);
         decoded_object = safely_cast_retainer_any(decoded);
-        trackABC       = (Track*) decoded_object;
+        trackABC = (Track*) decoded_object;
         trackABC_r = RetainerSerializableObject_create(decoded_object);
 
         /* trackDgE */
@@ -77,6 +77,7 @@ protected:
         RetainerSerializableObject_managed_destroy(trackDgE_r);
         RetainerSerializableObject_managed_destroy(trackgFg_r);
         trackZ = trackABC = trackDgE = trackgFg = NULL;
+        trackZ_r = trackABC_r = trackDgE_r = trackgFg_r = NULL;
     }
 
     const char* sample_data_dir;
@@ -357,6 +358,7 @@ TEST_F(OTIOStackAlgoTests, FlattenSingleTrackTest)
 {
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
     Stack*           stack       = Stack_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(stack);
     ASSERT_TRUE(
         Stack_insert_child(stack, 0, (Composable*) trackABC, errorStatus));
 
@@ -375,7 +377,7 @@ TEST_F(OTIOStackAlgoTests, FlattenSingleTrackTest)
     flattenedStack = NULL;
     OTIOErrorStatus_destroy(errorStatus);
 
-    Stack_possibly_delete(stack);
+    OTIO_RELEASE(stack);
     stack = NULL;
 
     RetainerSerializableObject_managed_destroy(trackZ_r);
@@ -383,26 +385,29 @@ TEST_F(OTIOStackAlgoTests, FlattenSingleTrackTest)
     RetainerSerializableObject_managed_destroy(trackDgE_r);
     RetainerSerializableObject_managed_destroy(trackgFg_r);
     trackZ = trackABC = trackDgE = trackgFg = NULL;
+    trackZ_r = trackABC_r = trackDgE_r = trackgFg_r = NULL;
 }
 
 TEST_F(OTIOStackAlgoTests, FlattenObscuredTrackTest)
 {
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
     Stack*           stack       = Stack_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(stack);
     ASSERT_TRUE(
         Stack_insert_child(stack, 0, (Composable*) trackABC, errorStatus));
     ASSERT_TRUE(
         Stack_insert_child(stack, 1, (Composable*) trackZ, errorStatus));
 
     Track* flattenedStack = flatten_stack(stack, errorStatus);
+    OTIO_RETAIN(flattenedStack);
     Track_set_name(flattenedStack, "Sequence1");
     EXPECT_NE(flattenedStack, trackZ);
     EXPECT_TRUE(
         Track_is_equivalent_to(flattenedStack, reinterpret_cast<OTIOSerializableObject*>(trackZ)));
 
-    Track_possibly_delete(flattenedStack);
+    OTIO_RELEASE(flattenedStack);
     flattenedStack = NULL;
-    Stack_possibly_delete(stack);
+    OTIO_RELEASE(stack);
     stack = NULL;
 
     stack = Stack_create(NULL, NULL, NULL, NULL, NULL);
@@ -423,12 +428,14 @@ TEST_F(OTIOStackAlgoTests, FlattenObscuredTrackTest)
     RetainerSerializableObject_managed_destroy(trackDgE_r);
     RetainerSerializableObject_managed_destroy(trackgFg_r);
     trackZ = trackABC = trackDgE = trackgFg = NULL;
+    trackZ_r = trackABC_r = trackDgE_r = trackgFg_r = NULL;
 }
 
 TEST_F(OTIOStackAlgoTests, FlattenGapsTest)
 {
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
     Stack*           stack       = Stack_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(stack);
     ASSERT_TRUE(
         Stack_insert_child(stack, 0, (Composable*) trackABC, errorStatus));
     ASSERT_TRUE(
@@ -507,7 +514,7 @@ TEST_F(OTIOStackAlgoTests, FlattenGapsTest)
         reinterpret_cast<OTIOSerializableObject*>(flattenedStack_2),
         reinterpret_cast<OTIOSerializableObject*>(trackDgE_2)));
 
-    Stack_possibly_delete(stack);
+    OTIO_RELEASE(stack);
     stack = Stack_create(NULL, NULL, NULL, NULL, NULL);
     ASSERT_TRUE(
         Stack_insert_child(stack, 0, (Composable*) trackABC, errorStatus));
@@ -566,18 +573,21 @@ TEST_F(OTIOStackAlgoTests, FlattenGapsTest)
     RetainerSerializableObject_managed_destroy(trackDgE_r);
     RetainerSerializableObject_managed_destroy(trackgFg_r);
     trackZ = trackABC = trackDgE = trackgFg = NULL;
+    trackZ_r = trackABC_r = trackDgE_r = trackgFg_r = NULL;
 }
 
 TEST_F(OTIOStackAlgoTests, FlattenGapsWithTrimsTest)
 {
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
     Stack*           stack       = Stack_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(stack);
     ASSERT_TRUE(
         Stack_insert_child(stack, 0, (Composable*) trackZ, errorStatus));
     ASSERT_TRUE(
         Stack_insert_child(stack, 1, (Composable*) trackDgE, errorStatus));
 
     Track* flattenedStack = flatten_stack(stack, errorStatus);
+    OTIO_RETAIN(flattenedStack);
     Track_set_name(flattenedStack, "Sequence1");
 
     ComposableRetainerVector* flattenedStackChildren =
@@ -636,20 +646,22 @@ TEST_F(OTIOStackAlgoTests, FlattenGapsWithTrimsTest)
     RationalTime_destroy(start);
     RationalTime_destroy(duration);
 
-    Stack_possibly_delete(stack);
+    OTIO_RELEASE(stack);
     stack = NULL;
-    Track_possibly_delete(flattenedStack);
+    OTIO_RELEASE(flattenedStack);
     flattenedStack = NULL;
 
-    stack = Stack_create(NULL, NULL, NULL, NULL, NULL);
+    Stack* stack2 = Stack_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(stack2);
     ASSERT_TRUE(
-        Stack_insert_child(stack, 0, (Composable*) trackZ, errorStatus));
+        Stack_insert_child(stack2, 0, (Composable*) trackZ, errorStatus));
     ASSERT_TRUE(
-        Stack_insert_child(stack, 1, (Composable*) trackgFg, errorStatus));
-    flattenedStack = flatten_stack(stack, errorStatus);
-    Track_set_name(flattenedStack, "Sequence1");
+        Stack_insert_child(stack2, 1, (Composable*) trackgFg, errorStatus));
+    Track* flattenedStack2 = flatten_stack(stack2, errorStatus);
+    OTIO_RETAIN(flattenedStack2);
+    Track_set_name(flattenedStack2, "Sequence1");
 
-    flattenedStackChildren = Track_children(flattenedStack);
+    flattenedStackChildren = Track_children(flattenedStack2);
     flattenedStackIt = ComposableRetainerVector_begin(flattenedStackChildren);
     flattenedStack_0_retainer =
         ComposableRetainerVectorIterator_value(flattenedStackIt);
@@ -713,15 +725,16 @@ TEST_F(OTIOStackAlgoTests, FlattenGapsWithTrimsTest)
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
-    Stack_possibly_delete(stack);
+    OTIO_RELEASE(stack2);
     stack = NULL;
-    Track_possibly_delete(flattenedStack);
+    OTIO_RELEASE(flattenedStack2);
     flattenedStack = NULL;
     RetainerSerializableObject_managed_destroy(trackZ_r);
     RetainerSerializableObject_managed_destroy(trackABC_r);
     RetainerSerializableObject_managed_destroy(trackDgE_r);
     RetainerSerializableObject_managed_destroy(trackgFg_r);
     trackZ = trackABC = trackDgE = trackgFg = NULL;
+    trackZ_r = trackABC_r = trackDgE_r = trackgFg_r = NULL;
 }
 
 TEST_F(OTIOStackAlgoTests, FlattenVectorOfTracksTest)
@@ -733,6 +746,7 @@ TEST_F(OTIOStackAlgoTests, FlattenVectorOfTracksTest)
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     Track* flatTrack = flatten_stack_track_vector(tracks, errorStatus);
+    OTIO_RETAIN(flatTrack);
 
     ComposableRetainerVector* trackABCChildren = Track_children(trackABC);
     ComposableRetainerVectorIterator* trackABCIt =
@@ -811,7 +825,7 @@ TEST_F(OTIOStackAlgoTests, FlattenVectorOfTracksTest)
 
     TrackVector_destroy(tracks);
     tracks = NULL;
-    Track_possibly_delete(flatTrack);
+    OTIO_RELEASE(flatTrack);
     flatTrack = NULL;
 
     tracks = TrackVector_create();
@@ -847,7 +861,7 @@ TEST_F(OTIOStackAlgoTests, FlattenVectorOfTracksTest)
 
     TrackVector_destroy(tracks);
     tracks = NULL;
-    Track_possibly_delete(flatTrack);
+    OTIO_RELEASE(flatTrack);
     flatTrack = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
@@ -856,6 +870,7 @@ TEST_F(OTIOStackAlgoTests, FlattenVectorOfTracksTest)
     RetainerSerializableObject_managed_destroy(trackDgE_r);
     RetainerSerializableObject_managed_destroy(trackgFg_r);
     trackZ = trackABC = trackDgE = trackgFg = NULL;
+    trackZ_r = trackABC_r = trackDgE_r = trackgFg_r = NULL;
 }
 
 TEST_F(OTIOStackAlgoTests, FlattenExampleCodeTest)
@@ -920,6 +935,7 @@ TEST_F(OTIOStackAlgoTests, FlattenExampleCodeTest)
     RetainerSerializableObject_managed_destroy(trackDgE_r);
     RetainerSerializableObject_managed_destroy(trackgFg_r);
     trackZ = trackABC = trackDgE = trackgFg = NULL;
+    trackZ_r = trackABC_r = trackDgE_r = trackgFg_r = NULL;
 }
 
 TEST_F(OTIOStackAlgoTests, FlattenWithTransitionTest)
@@ -931,6 +947,7 @@ TEST_F(OTIOStackAlgoTests, FlattenWithTransitionTest)
 
     Transition* transition =
         Transition_create("test_transition", NULL, in_offset, out_offset, NULL);
+    OTIO_RETAIN(transition);
 
     RationalTime_destroy(in_offset);
     RationalTime_destroy(out_offset);
@@ -940,6 +957,7 @@ TEST_F(OTIOStackAlgoTests, FlattenWithTransitionTest)
         Track_insert_child(trackDgE, 1, (Composable*) transition, errorStatus));
 
     Stack* stack = Stack_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(stack);
     ASSERT_TRUE(
         Stack_insert_child(stack, 0, (Composable*) trackABC, errorStatus));
     ASSERT_TRUE(
@@ -972,13 +990,14 @@ TEST_F(OTIOStackAlgoTests, FlattenWithTransitionTest)
     flat_track_1 = NULL;
     ComposableRetainerVector_destroy(flat_track_childen);
     flat_track_childen = NULL;
-    Transition_possibly_delete(transition);
+    OTIO_RELEASE(transition);
     transition = NULL;
-    Stack_possibly_delete(stack);
+    OTIO_RELEASE(stack);
     stack = NULL;
     RetainerSerializableObject_managed_destroy(trackZ_r);
     RetainerSerializableObject_managed_destroy(trackABC_r);
     RetainerSerializableObject_managed_destroy(trackDgE_r);
     RetainerSerializableObject_managed_destroy(trackgFg_r);
     trackZ = trackABC = trackDgE = trackgFg = NULL;
+    trackZ_r = trackABC_r = trackDgE_r = trackgFg_r = NULL;
 }

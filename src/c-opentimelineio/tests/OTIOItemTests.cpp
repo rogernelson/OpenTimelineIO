@@ -31,6 +31,7 @@ protected:
 TEST_F(OTIOGapTests, SerializeTest)
 {
     Gap* gap = Gap_create_with_duration(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(gap);
     Any* gap_any =
         create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(gap));
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
@@ -51,7 +52,7 @@ TEST_F(OTIOGapTests, SerializeTest)
     errorStatus = NULL;
     Any_destroy(decoded);
     decoded = NULL;
-    Gap_possibly_delete(gap);
+    OTIO_RELEASE(gap);
     gap = NULL;
 }
 
@@ -63,6 +64,7 @@ TEST_F(OTIOItemTests, ConstructorTest)
         TimeRange_create_with_start_time_and_duration(start, duration);
 
     Item* it = Item_create("foo", tr, NULL, NULL, NULL);
+    OTIO_RETAIN(it);
 
     EXPECT_STREQ(Item_name(it), "foo");
 
@@ -95,7 +97,7 @@ TEST_F(OTIOItemTests, ConstructorTest)
     errorStatus = NULL;
     Any_destroy(decoded);
     decoded = NULL;
-    Item_possibly_delete(it);
+    OTIO_RELEASE(it);
     it = NULL;
 }
 
@@ -110,6 +112,7 @@ TEST_F(OTIOItemTests, CopyArgumentsTest)
     MarkerVector*  markerVector = MarkerVector_create();
     AnyDictionary* metadata     = AnyDictionary_create();
     Item*          it = Item_create(it_name, tr, metadata, NULL, markerVector);
+    OTIO_RETAIN(it);
 
     it_name = "foobaz";
     EXPECT_STRNE(it_name, Item_name(it));
@@ -130,6 +133,7 @@ TEST_F(OTIOItemTests, CopyArgumentsTest)
     duration = NULL;
 
     Marker* marker = Marker_create(NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(marker);
     MarkerVector_push_back(markerVector, marker);
     MarkerRetainerVector* markerRetainerVector = Item_markers(it);
     EXPECT_NE(
@@ -137,7 +141,7 @@ TEST_F(OTIOItemTests, CopyArgumentsTest)
         MarkerVector_size(markerVector));
     MarkerRetainerVector_destroy(markerRetainerVector);
     markerRetainerVector = NULL;
-    Marker_possibly_delete(marker);
+    OTIO_RELEASE(marker);
     marker = NULL;
 
     Any* stringAny = create_safely_typed_any_string("bar");
@@ -153,7 +157,7 @@ TEST_F(OTIOItemTests, CopyArgumentsTest)
     markerVector = NULL;
     AnyDictionary_destroy(metadata);
     metadata = NULL;
-    Item_possibly_delete(it);
+    OTIO_RELEASE(it);
     it = NULL;
 }
 
@@ -164,6 +168,7 @@ TEST_F(OTIOItemTests, DurationTest)
     TimeRange*    tr =
         TimeRange_create_with_start_time_and_duration(start, duration);
     Item* it = Item_create(NULL, tr, NULL, NULL, NULL);
+    OTIO_RETAIN(it);
 
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
@@ -181,13 +186,14 @@ TEST_F(OTIOItemTests, DurationTest)
     tr = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
-    Item_possibly_delete(it);
+    OTIO_RELEASE(it);
     it = NULL;
 }
 
 TEST_F(OTIOItemTests, AvailableRangeTest)
 {
     Item* it = Item_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(it);
 
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
@@ -199,13 +205,14 @@ TEST_F(OTIOItemTests, AvailableRangeTest)
     available_range = NULL;
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
-    Item_possibly_delete(it);
+    OTIO_RELEASE(it);
     it = NULL;
 }
 
 TEST_F(OTIOItemTests, DurationAndSourceRangeTest)
 {
     Item* it = Item_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(it);
 
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
@@ -215,9 +222,9 @@ TEST_F(OTIOItemTests, DurationAndSourceRangeTest)
 
     RationalTime* start    = RationalTime_create(1, 1);
     RationalTime* duration = RationalTime_create(10, 1);
-    TimeRange*    tr =
-        TimeRange_create_with_start_time_and_duration(start, duration);
+    TimeRange*    tr = TimeRange_create_with_start_time_and_duration(start, duration);
     Item* it2 = Item_create(NULL, tr, NULL, NULL, NULL);
+    OTIO_RETAIN(it2);
 
     TimeRange* it2_source_range = Item_source_range(it2);
     EXPECT_TRUE(TimeRange_equal(it2_source_range, tr));
@@ -243,15 +250,16 @@ TEST_F(OTIOItemTests, DurationAndSourceRangeTest)
     tr = NULL;
     TimeRange_destroy(it2_source_range);
     it2_source_range = NULL;
-    Item_possibly_delete(it);
+    OTIO_RELEASE(it);
     it = NULL;
-    Item_possibly_delete(it2);
+    OTIO_RELEASE(it2);
     it2 = NULL;
 }
 
 TEST_F(OTIOItemTests, TrimmedRangeTest)
 {
     Item* it = Item_create(NULL, NULL, NULL, NULL, NULL);
+    OTIO_RETAIN(it);
 
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
@@ -264,6 +272,7 @@ TEST_F(OTIOItemTests, TrimmedRangeTest)
     TimeRange*    tr =
         TimeRange_create_with_start_time_and_duration(start, duration);
     Item* it2 = Item_create(NULL, tr, NULL, NULL, NULL);
+    OTIO_RETAIN(it2);
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = OTIOErrorStatus_create();
@@ -285,9 +294,9 @@ TEST_F(OTIOItemTests, TrimmedRangeTest)
     it2_trimmed_range = NULL;
     TimeRange_destroy(it_trimmed_range);
     it_trimmed_range = NULL;
-    Item_possibly_delete(it);
+    OTIO_RELEASE(it);
     it = NULL;
-    Item_possibly_delete(it2);
+    OTIO_RELEASE(it2);
     it2 = NULL;
 }
 
@@ -306,6 +315,7 @@ TEST_F(OTIOItemTests, MetadataTest)
         AnyDictionary_insert(metadata, "foo", stringAny);
 
     Item* item = Item_create(NULL, tr, metadata, NULL, NULL);
+    OTIO_RETAIN(item);
 
     Any* item_any =
         create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(item));
@@ -353,7 +363,7 @@ TEST_F(OTIOItemTests, MetadataTest)
     duration = NULL;
     TimeRange_destroy(tr);
     tr = NULL;
-    Item_possibly_delete(item);
+    OTIO_RELEASE(item);
     item = NULL;
 }
 
@@ -369,7 +379,8 @@ TEST_F(OTIOItemTests, MarkersTest)
     MarkerVector_push_back(markerVector, marker);
 
     Item* item = Item_create(NULL, tr, NULL, NULL, markerVector);
-
+    OTIO_RETAIN(item);
+    
     Any* item_any =
         create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(item));
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
@@ -396,7 +407,7 @@ TEST_F(OTIOItemTests, MarkersTest)
     duration = NULL;
     TimeRange_destroy(tr);
     tr = NULL;
-    Item_possibly_delete(item);
+    OTIO_RELEASE(item);
     item = NULL;
     MarkerVector_destroy(markerVector);
     markerVector = NULL;
@@ -414,6 +425,7 @@ TEST_F(OTIOItemTests, EffectsTest)
     EffectVector_push_back(effectVector, effect);
 
     Item* item = Item_create(NULL, tr, NULL, effectVector, NULL);
+    OTIO_RETAIN(item);
 
     Any* item_any =
         create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(item));
@@ -441,7 +453,7 @@ TEST_F(OTIOItemTests, EffectsTest)
     duration = NULL;
     TimeRange_destroy(tr);
     tr = NULL;
-    Item_possibly_delete(item);
+    OTIO_RELEASE(item);
     item = NULL;
     EffectVector_destroy(effectVector);
     effectVector = NULL;
@@ -514,6 +526,7 @@ TEST_F(OTIOItemTests, VisibleRangeTest)
     ASSERT_TRUE(Stack_insert_child(stack, 0, (Composable*) track, errorStatus));
 
     Timeline* timeline = Timeline_create(NULL, NULL, NULL);
+    OTIO_RETAIN(timeline);
     Timeline_set_tracks(timeline, stack);
 
     const char* name_list[]      = { "A", "B", "C", "D" };
@@ -604,6 +617,6 @@ TEST_F(OTIOItemTests, VisibleRangeTest)
     itEnd = NULL;
     ComposableVector_destroy(clipVector);
     clipVector = NULL;
-    Timeline_possibly_delete(timeline);
+    OTIO_RELEASE(timeline);
     timeline = NULL;
 }
