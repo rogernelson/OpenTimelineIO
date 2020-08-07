@@ -81,7 +81,7 @@ TEST_F(OTIOComposableTests, SerializeTest)
     Any*        decoded = /* allocate memory for destinantion */
         create_safely_typed_any_serializable_object(reinterpret_cast<OTIOSerializableObject*>(seqi));
 
-    bool decoded_successfully =
+    //bool decoded_successfully =
         deserialize_json_from_string(encoded, decoded, errorStatus);
     OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
 

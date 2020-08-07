@@ -117,22 +117,6 @@ extern "C"
     {
         std::advance(*reinterpret_cast<MarkerVectorIteratorDef*>(iter), dist);
     }
-    MarkerVectorIterator*
-    MarkerVectorIterator_next(MarkerVectorIterator* iter, int dist)
-    {
-        MarkerVectorIteratorDef it =
-            std::next(*reinterpret_cast<MarkerVectorIteratorDef*>(iter), dist);
-        return reinterpret_cast<MarkerVectorIterator*>(
-            new MarkerVectorIteratorDef(it));
-    }
-    MarkerVectorIterator*
-    MarkerVectorIterator_prev(MarkerVectorIterator* iter, int dist)
-    {
-        MarkerVectorIteratorDef it =
-            std::prev(*reinterpret_cast<MarkerVectorIteratorDef*>(iter), dist);
-        return reinterpret_cast<MarkerVectorIterator*>(
-            new MarkerVectorIteratorDef(it));
-    }
     Marker* MarkerVectorIterator_value(MarkerVectorIterator* iter)
     {
         OTIO_NS::Marker* obj =

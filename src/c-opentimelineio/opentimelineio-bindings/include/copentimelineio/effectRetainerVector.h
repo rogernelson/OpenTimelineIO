@@ -44,10 +44,6 @@ extern "C"
         EffectRetainerVectorIterator* last);
     void EffectRetainerVectorIterator_advance(
         EffectRetainerVectorIterator* iter, int dist);
-    EffectRetainerVectorIterator* EffectRetainerVectorIterator_next(
-        EffectRetainerVectorIterator* iter, int dist);
-    EffectRetainerVectorIterator* EffectRetainerVectorIterator_prev(
-        EffectRetainerVectorIterator* iter, int dist);
     RetainerEffect*
           EffectRetainerVectorIterator_value(EffectRetainerVectorIterator* iter);
     bool EffectRetainerVectorIterator_equal(

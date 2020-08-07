@@ -117,22 +117,6 @@ extern "C"
     {
         std::advance(*reinterpret_cast<EffectVectorIteratorDef*>(iter), dist);
     }
-    EffectVectorIterator*
-    EffectVectorIterator_next(EffectVectorIterator* iter, int dist)
-    {
-        EffectVectorIteratorDef it =
-            std::next(*reinterpret_cast<EffectVectorIteratorDef*>(iter), dist);
-        return reinterpret_cast<EffectVectorIterator*>(
-            new EffectVectorIteratorDef(it));
-    }
-    EffectVectorIterator*
-    EffectVectorIterator_prev(EffectVectorIterator* iter, int dist)
-    {
-        EffectVectorIteratorDef it =
-            std::prev(*reinterpret_cast<EffectVectorIteratorDef*>(iter), dist);
-        return reinterpret_cast<EffectVectorIterator*>(
-            new EffectVectorIteratorDef(it));
-    }
     Effect* EffectVectorIterator_value(EffectVectorIterator* iter)
     {
         OTIO_NS::Effect* obj =

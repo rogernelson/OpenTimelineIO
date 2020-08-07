@@ -115,22 +115,6 @@ ComposableVectorIterator_advance(ComposableVectorIterator* iter, int dist)
     std::advance(
         *reinterpret_cast<ComposableVectorIteratorDef*>(iter), dist);
 }
-OTIO_API ComposableVectorIterator*
-ComposableVectorIterator_next(ComposableVectorIterator* iter, int dist)
-{
-    ComposableVectorIteratorDef it = std::next(
-        *reinterpret_cast<ComposableVectorIteratorDef*>(iter), dist);
-    return reinterpret_cast<ComposableVectorIterator*>(
-        new ComposableVectorIteratorDef(it));
-}
-OTIO_API ComposableVectorIterator*
-ComposableVectorIterator_prev(ComposableVectorIterator* iter, int dist)
-{
-    ComposableVectorIteratorDef it = std::prev(
-        *reinterpret_cast<ComposableVectorIteratorDef*>(iter), dist);
-    return reinterpret_cast<ComposableVectorIterator*>(
-        new ComposableVectorIteratorDef(it));
-}
 OTIO_API Composable* ComposableVectorIterator_value(ComposableVectorIterator* iter)
 {
     OTIO_NS::Composable* obj =

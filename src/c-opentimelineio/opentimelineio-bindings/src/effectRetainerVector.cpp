@@ -127,24 +127,7 @@ extern "C"
     void EffectRetainerVectorIterator_advance(
         EffectRetainerVectorIterator* iter, int dist)
     {
-        std::advance(
-            *reinterpret_cast<EffectRetainerVectorIteratorDef*>(iter), dist);
-    }
-    EffectRetainerVectorIterator* EffectRetainerVectorIterator_next(
-        EffectRetainerVectorIterator* iter, int dist)
-    {
-        EffectRetainerVectorIteratorDef it = std::next(
-            *reinterpret_cast<EffectRetainerVectorIteratorDef*>(iter), dist);
-        return reinterpret_cast<EffectRetainerVectorIterator*>(
-            new EffectRetainerVectorIteratorDef(it));
-    }
-    EffectRetainerVectorIterator* EffectRetainerVectorIterator_prev(
-        EffectRetainerVectorIterator* iter, int dist)
-    {
-        EffectRetainerVectorIteratorDef it = std::prev(
-            *reinterpret_cast<EffectRetainerVectorIteratorDef*>(iter), dist);
-        return reinterpret_cast<EffectRetainerVectorIterator*>(
-            new EffectRetainerVectorIteratorDef(it));
+        std::advance(*reinterpret_cast<EffectRetainerVectorIteratorDef*>(iter), dist);
     }
     RetainerEffect*
     EffectRetainerVectorIterator_value(EffectRetainerVectorIterator* iter)

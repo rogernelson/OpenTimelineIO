@@ -365,7 +365,7 @@ TEST_F(OTIOStackAlgoTests, FlattenSingleTrackTest)
     Track* flattenedStack = flatten_stack(stack, errorStatus);
     OTIO_RETAIN(flattenedStack);
     Track_set_name(flattenedStack, "Sequence1");
-    Any* s_any = create_safely_typed_any_serializable_object(
+    /*Any* s_any = */ create_safely_typed_any_serializable_object(
         reinterpret_cast<OTIOSerializableObject*>(flattenedStack));
 
     EXPECT_NE(flattenedStack, trackABC);

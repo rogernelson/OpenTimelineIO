@@ -4,6 +4,7 @@
 #include <copentime/timeRange.h>
 #include <copentimelineio/clip.h>
 #include <copentimelineio/composable.h>
+#include <copentimelineio/composableRetainerVector.h>
 #include <copentimelineio/composableVector.h>
 #include <copentimelineio/composition.h>
 #include <copentimelineio/deserialization.h>
@@ -84,11 +85,11 @@ protected:
             reinterpret_cast<OTIOSerializableObject*>(item), errorStatus);
 
         /* now put the item inside the wrapper */
-        bool appendOK = Composition_append_child(
+        /*bool appendOK =*/ Composition_append_child(
             (Composition*) wrapper, (Composable*) clip, errorStatus);
 
         /* swap out the item for the wrapper */
-        bool setOK = Composition_set_child(
+        /*bool setOK =*/ Composition_set_child(
             (Composition*) parent, index, (Composable*) wrapper, errorStatus);
 
         clipWrapperPair.clip    = clip;
@@ -246,7 +247,7 @@ TEST_F(OTIOCompositionTests, IsParentOfTest)
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
     EXPECT_FALSE(Composition_is_parent_of(co, (Composable*) co_2));
-    bool appendOK =
+    //bool appendOK =
         Composition_append_child(co, (Composable*) co_2, errorStatus);
     EXPECT_TRUE(Composition_is_parent_of(co, (Composable*) co_2));
 
@@ -265,7 +266,7 @@ TEST_F(OTIOCompositionTests, ParentManipTest)
     ComposableVector* composableVector = ComposableVector_create();
     ComposableVector_push_back(composableVector, (Composable*) it);
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
-    bool resultOK = Composition_set_children(co, composableVector, errorStatus);
+    /*bool resultOK =*/ Composition_set_children(co, composableVector, errorStatus);
     Composition* parent = Composable_parent((Composable*) it);
     EXPECT_EQ(parent, co);
 
@@ -1992,14 +1993,14 @@ TEST_F(OTIOTrackTests, TrackRangeOfAllChildrenTest)
     MapComposableTimeRange* mp = Track_range_of_all_children(tr, errorStatus);
 
     /** fetch all the valid children that should be in the map */
-    ComposableVector* vc = Track_each_clip(tr);
+    ComposableRetainerVector* vc = Track_clips(tr);
 
-    Composable*                     vc_0 = ComposableVector_at(vc, 0);
-    Composable*                     vc_1 = ComposableVector_at(vc, 1);
-    MapComposableTimeRangeIterator* it = MapComposableTimeRange_find(mp, vc_0);
+    RetainerComposable* vc_0 = ComposableRetainerVector_at(vc, 0);
+    RetainerComposable* vc_1 = ComposableRetainerVector_at(vc, 1);
+    MapComposableTimeRangeIterator* it = MapComposableTimeRange_find(mp, RetainerComposable_value(vc_0));
     TimeRange* mp_vc_0 = MapComposableTimeRangeIterator_value(it);
     MapComposableTimeRangeIterator_destroy(it);
-    it                 = MapComposableTimeRange_find(mp, vc_1);
+    it                 = MapComposableTimeRange_find(mp, RetainerComposable_value(vc_1));
     TimeRange* mp_vc_1 = MapComposableTimeRangeIterator_value(it);
     MapComposableTimeRangeIterator_destroy(it);
     RationalTime* mp_vc_0_start_time = TimeRange_start_time(mp_vc_0);
@@ -2013,7 +2014,7 @@ TEST_F(OTIOTrackTests, TrackRangeOfAllChildrenTest)
     RationalTime_destroy(mp_vc_1_start_time);
     TimeRange_destroy(mp_vc_1);
     TimeRange_destroy(mp_vc_0);
-    ComposableVector_destroy(vc);
+    ComposableRetainerVector_destroy(vc);
 
     ComposableRetainerVector* timeline_tracks_retainer_vector =
         composableRetainerVector;
@@ -2198,18 +2199,17 @@ TEST_F(OTIOEdgeCases, IteratingOverDupesTest)
 
     /** test recursive iteration */
 
-    ComposableVector*         composableVector = Track_each_clip(track);
-    ComposableVectorIterator* clip_it =
-        ComposableVector_begin(composableVector);
-    ComposableVectorIterator* clip_it_end =
-        ComposableVector_end(composableVector);
-    for(; ComposableVectorIterator_not_equal(clip_it, clip_it_end);
-        ComposableVectorIterator_advance(clip_it, 1))
+    ComposableRetainerVector* composableVector = Track_clips(track);
+    ComposableRetainerVectorIterator* clip_it = ComposableRetainerVector_begin(composableVector);
+    ComposableRetainerVectorIterator* clip_it_end =
+        ComposableRetainerVector_end(composableVector);
+    for(; ComposableRetainerVectorIterator_not_equal(clip_it, clip_it_end);
+        ComposableRetainerVectorIterator_advance(clip_it, 1))
     {
-        Composable* item = ComposableVectorIterator_value(clip_it);
+        RetainerComposable* item = ComposableRetainerVectorIterator_value(clip_it);
 
         TimeRange* range_of_child =
-            Composition_range_of_child((Composition*) track, item, errorStatus);
+            Composition_range_of_child((Composition*) track, RetainerComposable_value(item), errorStatus);
         TimeRange* range_in_parent =
             Item_range_in_parent((Item*) item, errorStatus);
 
@@ -2228,9 +2228,9 @@ TEST_F(OTIOEdgeCases, IteratingOverDupesTest)
     }
     TimeRange_destroy(previous);
     previous = NULL;
-    ComposableVectorIterator_destroy(clip_it);
+    ComposableRetainerVectorIterator_destroy(clip_it);
     clip_it = NULL;
-    ComposableVectorIterator_destroy(clip_it_end);
+    ComposableRetainerVectorIterator_destroy(clip_it_end);
     clip_it_end = NULL;
 
     /** compare to iteration by index */
@@ -2275,16 +2275,16 @@ TEST_F(OTIOEdgeCases, IteratingOverDupesTest)
     i      = 0;
 
     /** compare recursive to iteration by index */
-    composableVector = Track_each_clip(track);
-    clip_it          = ComposableVector_begin(composableVector);
-    clip_it_end      = ComposableVector_end(composableVector);
-    for(; ComposableVectorIterator_not_equal(clip_it, clip_it_end);
-        ComposableVectorIterator_advance(clip_it, 1), i++)
+    composableVector = Track_clips(track);
+    clip_it          = ComposableRetainerVector_begin(composableVector);
+    clip_it_end      = ComposableRetainerVector_end(composableVector);
+    for(; ComposableRetainerVectorIterator_not_equal(clip_it, clip_it_end);
+        ComposableRetainerVectorIterator_advance(clip_it, 1), i++)
     {
-        Composable* item = ComposableVectorIterator_value(clip_it);
+        RetainerComposable* item = ComposableRetainerVectorIterator_value(clip_it);
 
         TimeRange* range_of_child =
-            Composition_range_of_child((Composition*) track, item, errorStatus);
+            Composition_range_of_child((Composition*) track, RetainerComposable_value(item), errorStatus);
         TimeRange* range_in_parent =
             Item_range_in_parent((Item*) item, errorStatus);
         TimeRange* range_of_child_index =
@@ -2307,14 +2307,14 @@ TEST_F(OTIOEdgeCases, IteratingOverDupesTest)
     }
     TimeRange_destroy(previous);
     previous = NULL;
-    ComposableVectorIterator_destroy(clip_it);
+    ComposableRetainerVectorIterator_destroy(clip_it);
     clip_it = NULL;
-    ComposableVectorIterator_destroy(clip_it_end);
+    ComposableRetainerVectorIterator_destroy(clip_it_end);
     clip_it_end = NULL;
 
     ComposableRetainerVector_destroy(composableRetainerVector);
     composableRetainerVector = NULL;
-    ComposableVector_destroy(composableVector);
+    ComposableRetainerVector_destroy(composableVector);
     composableVector = NULL;
     OTIO_RELEASE(timeline);
     timeline = NULL;
@@ -2722,6 +2722,7 @@ TEST_F(OTIONestingTest, ChildAtTimeWithChildrenTest)
             (SerializableObjectWithMetadata*) clip3),
         "clip3");
 
+    #if 0
     struct NameFrame
     {
         const char* name;
@@ -2745,12 +2746,12 @@ TEST_F(OTIONestingTest, ChildAtTimeWithChildrenTest)
 
     int expected_size = sizeof(expected) / sizeof(expected[0]);
 
-    //    for(int i = 0; i < expected_size; ++i)
-    //    {
-    //        RationalTime* playhead = RationalTime_create(i, 24);
-    //
-    //    }
-    //TODO create child_at_time_function
+        for(int i = 0; i < expected_size; ++i)
+        {
+            RationalTime* playhead = RationalTime_create(i, 24);
     
+        }
+    TODO create child_at_time_function
+#endif
     OTIO_RELEASE(sq);
 }

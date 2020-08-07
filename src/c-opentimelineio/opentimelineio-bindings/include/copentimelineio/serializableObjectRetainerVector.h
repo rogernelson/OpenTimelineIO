@@ -64,12 +64,6 @@ extern "C"
         SerializableObjectRetainerVectorIterator* last);
     void SerializableObjectRetainerVectorIterator_advance(
         SerializableObjectRetainerVectorIterator* iter, int dist);
-    SerializableObjectRetainerVectorIterator*
-    SerializableObjectRetainerVectorIterator_next(
-        SerializableObjectRetainerVectorIterator* iter, int dist);
-    SerializableObjectRetainerVectorIterator*
-    SerializableObjectRetainerVectorIterator_prev(
-        SerializableObjectRetainerVectorIterator* iter, int dist);
     RetainerSerializableObject* SerializableObjectRetainerVectorIterator_value(
         SerializableObjectRetainerVectorIterator* iter);
     bool SerializableObjectRetainerVectorIterator_equal(

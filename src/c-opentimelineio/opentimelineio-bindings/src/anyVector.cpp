@@ -104,18 +104,6 @@ extern "C"
     {
         std::advance(*reinterpret_cast<VectorIterator*>(iter), dist);
     }
-    AnyVectorIterator* AnyVectorIterator_next(AnyVectorIterator* iter, int dist)
-    {
-        VectorIterator it =
-            std::next(*reinterpret_cast<VectorIterator*>(iter), dist);
-        return reinterpret_cast<AnyVectorIterator*>(new VectorIterator(it));
-    }
-    AnyVectorIterator* AnyVectorIterator_prev(AnyVectorIterator* iter, int dist)
-    {
-        VectorIterator it =
-            std::prev(*reinterpret_cast<VectorIterator*>(iter), dist);
-        return reinterpret_cast<AnyVectorIterator*>(new VectorIterator(it));
-    }
     Any* AnyVectorIterator_value(AnyVectorIterator* iter)
     {
         OTIO_NS::any value = *reinterpret_cast<VectorIterator*>(iter);

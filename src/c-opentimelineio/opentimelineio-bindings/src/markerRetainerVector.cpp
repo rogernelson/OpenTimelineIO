@@ -130,22 +130,6 @@ extern "C"
         std::advance(
             *reinterpret_cast<MarkerRetainerVectorIteratorDef*>(iter), dist);
     }
-    MarkerRetainerVectorIterator* MarkerRetainerVectorIterator_next(
-        MarkerRetainerVectorIterator* iter, int dist)
-    {
-        MarkerRetainerVectorIteratorDef it = std::next(
-            *reinterpret_cast<MarkerRetainerVectorIteratorDef*>(iter), dist);
-        return reinterpret_cast<MarkerRetainerVectorIterator*>(
-            new MarkerRetainerVectorIteratorDef(it));
-    }
-    MarkerRetainerVectorIterator* MarkerRetainerVectorIterator_prev(
-        MarkerRetainerVectorIterator* iter, int dist)
-    {
-        MarkerRetainerVectorIteratorDef it = std::prev(
-            *reinterpret_cast<MarkerRetainerVectorIteratorDef*>(iter), dist);
-        return reinterpret_cast<MarkerRetainerVectorIterator*>(
-            new MarkerRetainerVectorIteratorDef(it));
-    }
     RetainerMarker*
     MarkerRetainerVectorIterator_value(MarkerRetainerVectorIterator* iter)
     {

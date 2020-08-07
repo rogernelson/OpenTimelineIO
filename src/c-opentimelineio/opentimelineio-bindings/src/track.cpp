@@ -10,6 +10,8 @@
 #include <string.h>
 #include <utility>
 
+namespace otio = opentimelineio::OPENTIMELINEIO_VERSION;
+
 typedef std::map<OTIO_NS::Composable*, opentime::TimeRange>::iterator
     MapComposableTimeRangeIteratorDef;
 typedef std::map<OTIO_NS::Composable*, opentime::TimeRange>
@@ -128,21 +130,6 @@ OTIO_API RetainerPairComposable* Track_neighbors_of(
     return reinterpret_cast<RetainerPairComposable*>(
         new RetainerPairComposableDef(retainerPairComposable));
 }
-OTIO_API ComposableVector* Track_each_clip(Track* self)
-{
-    ComposableRetainerVectorDef composableRetainerVector =
-        reinterpret_cast<OTIO_NS::Track*>(self)->children();
-    ComposableVectorDef* composableVector = new ComposableVectorDef();
-
-    for(int i = 0; i < composableRetainerVector.size(); i++)
-    {
-        if(composableRetainerVector[i].value->schema_name() == "Clip")
-        {
-            composableVector->push_back(composableRetainerVector[i].value);
-        }
-    }
-    return reinterpret_cast<ComposableVector*>(composableVector);
-}
 OTIO_API MapComposableTimeRange*
 Track_range_of_all_children(Track* self, OTIOErrorStatus* error_status)
 {
@@ -155,10 +142,6 @@ Track_range_of_all_children(Track* self, OTIOErrorStatus* error_status)
 OTIO_API const char* Track_composition_kind(Track* self)
 {
     return Composition_composition_kind((Composition*) self);
-}
-OTIO_API ComposableRetainerVector* Track_children(Track* self)
-{
-    return Composition_children((Composition*) self);
 }
 OTIO_API void Track_clear_children(Track* self)
 {
@@ -240,6 +223,7 @@ OTIO_API void Track_set_source_range(Track* self, TimeRange* source_range)
 {
     Composition_set_source_range((Composition*) self, source_range);
 }
+
 OTIO_API EffectRetainerVector* Track_effects(Track* self)
 {
     return Composition_effects((Composition*) self);
@@ -248,6 +232,26 @@ OTIO_API MarkerRetainerVector* Track_markers(Track* self)
 {
     return Composition_markers((Composition*) self);
 }
+OTIO_API ComposableRetainerVector* Track_children(Track* self)
+{
+    return Composition_children((Composition*) self);
+}
+OTIO_API ComposableRetainerVector* Track_clips(Track* self)
+{
+    auto track = reinterpret_cast<otio::Track*>(self);
+    auto &children = track->children();
+    auto composableVector = new ComposableRetainerVectorDef();
+    for (auto& i : children)
+    {
+        if (i.value->schema_name() == "Clip")
+        {
+            composableVector->push_back(i);
+        }
+    }
+    return reinterpret_cast<ComposableRetainerVector*>(composableVector);
+}
+
+
 OTIO_API RationalTime* Track_duration(Track* self, OTIOErrorStatus* error_status)
 {
     return Composition_duration((Composition*) self, error_status);

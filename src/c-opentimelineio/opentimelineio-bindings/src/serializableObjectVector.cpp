@@ -125,24 +125,6 @@ OTIO_API void SerializableObjectVectorIterator_advance(
         *reinterpret_cast<SerializableObjectVectorIteratorDef*>(iter),
         dist);
 }
-OTIO_API SerializableObjectVectorIterator* SerializableObjectVectorIterator_next(
-    SerializableObjectVectorIterator* iter, int dist)
-{
-    SerializableObjectVectorIteratorDef it = std::next(
-        *reinterpret_cast<SerializableObjectVectorIteratorDef*>(iter),
-        dist);
-    return reinterpret_cast<SerializableObjectVectorIterator*>(
-        new SerializableObjectVectorIteratorDef(it));
-}
-OTIO_API SerializableObjectVectorIterator* SerializableObjectVectorIterator_prev(
-    SerializableObjectVectorIterator* iter, int dist)
-{
-    SerializableObjectVectorIteratorDef it = std::prev(
-        *reinterpret_cast<SerializableObjectVectorIteratorDef*>(iter),
-        dist);
-    return reinterpret_cast<SerializableObjectVectorIterator*>(
-        new SerializableObjectVectorIteratorDef(it));
-}
 OTIO_API OTIOSerializableObject* SerializableObjectVectorIterator_value(
     SerializableObjectVectorIterator* iter)
 {

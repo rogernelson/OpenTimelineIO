@@ -85,13 +85,6 @@ extern "C"
         strcpy(charPtr, returnStr.c_str());
         return charPtr;
     }
-    ComposableRetainerVector* Composition_children(Composition* self)
-    {
-        ComposableRetainerVectorDef composableRetainerVector =
-            reinterpret_cast<OTIO_NS::Composition*>(self)->children();
-        return reinterpret_cast<ComposableRetainerVector*>(
-            new ComposableRetainerVectorDef(composableRetainerVector));
-    }
     void Composition_clear_children(Composition* self)
     {
         reinterpret_cast<OTIO_NS::Composition*>(self)->clear_children();
@@ -245,6 +238,13 @@ extern "C"
     MarkerRetainerVector* Composition_markers(Composition* self)
     {
         return Item_markers((Item*) self);
+    }
+    ComposableRetainerVector* Composition_children(Composition* self)
+    {
+        ComposableRetainerVectorDef composableRetainerVector =
+            reinterpret_cast<OTIO_NS::Composition*>(self)->children();
+        return reinterpret_cast<ComposableRetainerVector*>(
+            new ComposableRetainerVectorDef(composableRetainerVector));
     }
     RationalTime*
     Composition_duration(Composition* self, OTIOErrorStatus* error_status)

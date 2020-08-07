@@ -104,20 +104,6 @@ extern "C"
     {
         std::advance(*reinterpret_cast<MapIterator*>(iter), dist);
     }
-    MapComposableTimeRangeIterator* MapComposableTimeRangeIterator_next(
-        MapComposableTimeRangeIterator* iter, int dist)
-    {
-        MapIterator it = std::next(*reinterpret_cast<MapIterator*>(iter), dist);
-        return reinterpret_cast<MapComposableTimeRangeIterator*>(
-            new MapIterator(it));
-    }
-    MapComposableTimeRangeIterator* MapComposableTimeRangeIterator_prev(
-        MapComposableTimeRangeIterator* iter, int dist)
-    {
-        MapIterator it = std::prev(*reinterpret_cast<MapIterator*>(iter), dist);
-        return reinterpret_cast<MapComposableTimeRangeIterator*>(
-            new MapIterator(it));
-    }
     TimeRange*
     MapComposableTimeRangeIterator_value(MapComposableTimeRangeIterator* iter)
     {

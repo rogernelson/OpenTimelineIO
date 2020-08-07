@@ -91,22 +91,6 @@ OTIO_API void AnyDictionaryIterator_advance(AnyDictionaryIterator* iter, int dis
 {
     std::advance(*reinterpret_cast<DictionaryIterator*>(iter), dist);
 }
-OTIO_API AnyDictionaryIterator*
-AnyDictionaryIterator_next(AnyDictionaryIterator* iter, int dist)
-{
-    DictionaryIterator it =
-        std::next(*reinterpret_cast<DictionaryIterator*>(iter), dist);
-    return reinterpret_cast<AnyDictionaryIterator*>(
-        new DictionaryIterator(it));
-}
-OTIO_API AnyDictionaryIterator*
-AnyDictionaryIterator_prev(AnyDictionaryIterator* iter, int dist)
-{
-    DictionaryIterator it =
-        std::prev(*reinterpret_cast<DictionaryIterator*>(iter), dist);
-    return reinterpret_cast<AnyDictionaryIterator*>(
-        new DictionaryIterator(it));
-}
 OTIO_API const char* AnyDictionaryIterator_key(AnyDictionaryIterator* iter)
 {
     std::string returnStr =

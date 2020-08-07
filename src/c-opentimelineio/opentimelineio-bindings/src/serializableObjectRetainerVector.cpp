@@ -167,28 +167,6 @@ extern "C"
                 iter),
             dist);
     }
-    SerializableObjectRetainerVectorIterator*
-    SerializableObjectRetainerVectorIterator_next(
-        SerializableObjectRetainerVectorIterator* iter, int dist)
-    {
-        SerializableObjectRetainerVectorIteratorDef it = std::next(
-            *reinterpret_cast<SerializableObjectRetainerVectorIteratorDef*>(
-                iter),
-            dist);
-        return reinterpret_cast<SerializableObjectRetainerVectorIterator*>(
-            new SerializableObjectRetainerVectorIteratorDef(it));
-    }
-    SerializableObjectRetainerVectorIterator*
-    SerializableObjectRetainerVectorIterator_prev(
-        SerializableObjectRetainerVectorIterator* iter, int dist)
-    {
-        SerializableObjectRetainerVectorIteratorDef it = std::prev(
-            *reinterpret_cast<SerializableObjectRetainerVectorIteratorDef*>(
-                iter),
-            dist);
-        return reinterpret_cast<SerializableObjectRetainerVectorIterator*>(
-            new SerializableObjectRetainerVectorIteratorDef(it));
-    }
     RetainerSerializableObject* SerializableObjectRetainerVectorIterator_value(
         SerializableObjectRetainerVectorIterator* iter)
     {

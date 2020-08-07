@@ -130,24 +130,6 @@ OTIO_API void ComposableRetainerVectorIterator_advance(
         *reinterpret_cast<ComposableRetainerVectorIteratorDef*>(iter),
         dist);
 }
-OTIO_API ComposableRetainerVectorIterator* ComposableRetainerVectorIterator_next(
-    ComposableRetainerVectorIterator* iter, int dist)
-{
-    ComposableRetainerVectorIteratorDef it = std::next(
-        *reinterpret_cast<ComposableRetainerVectorIteratorDef*>(iter),
-        dist);
-    return reinterpret_cast<ComposableRetainerVectorIterator*>(
-        new ComposableRetainerVectorIteratorDef(it));
-}
-OTIO_API ComposableRetainerVectorIterator* ComposableRetainerVectorIterator_prev(
-    ComposableRetainerVectorIterator* iter, int dist)
-{
-    ComposableRetainerVectorIteratorDef it = std::prev(
-        *reinterpret_cast<ComposableRetainerVectorIteratorDef*>(iter),
-        dist);
-    return reinterpret_cast<ComposableRetainerVectorIterator*>(
-        new ComposableRetainerVectorIteratorDef(it));
-}
 OTIO_API RetainerComposable* ComposableRetainerVectorIterator_value(
     ComposableRetainerVectorIterator* iter)
 {

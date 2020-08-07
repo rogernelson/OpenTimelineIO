@@ -27,7 +27,7 @@ protected:
         Any* decoded = /* allocate memory for destinantion */
             create_safely_typed_any_serializable_object(
                 SerializableObject_create());
-        bool decoded_successfully = deserialize_json_from_string(
+        /*bool decoded_successfully =*/ deserialize_json_from_string(
             sample_track_str, decoded, errorStatus);
         OTIOSerializableObject* decoded_object = safely_cast_retainer_any(decoded);
         sample_track = (Track*) decoded_object;

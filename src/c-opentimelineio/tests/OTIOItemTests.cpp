@@ -565,18 +565,18 @@ TEST_F(OTIOItemTests, VisibleRangeTest)
         visible_range_1, visible_range_2, visible_range_3, visible_range_4
     };
 
-    ComposableVector*         clipVector = Track_each_clip(track);
-    ComposableVectorIterator* it         = ComposableVector_begin(clipVector);
-    ComposableVectorIterator* itEnd      = ComposableVector_end(clipVector);
+    ComposableRetainerVector* clipVector = Track_clips(track);
+    ComposableRetainerVectorIterator* it    = ComposableRetainerVector_begin(clipVector);
+    ComposableRetainerVectorIterator* itEnd = ComposableRetainerVector_end(clipVector);
 
     OTIOErrorStatus_destroy(errorStatus);
     errorStatus = NULL;
 
-    for(int i = 0; ComposableVectorIterator_not_equal(it, itEnd);
-        ComposableVectorIterator_advance(it, 1), i++)
+    for(int i = 0; ComposableRetainerVectorIterator_not_equal(it, itEnd);
+        ComposableRetainerVectorIterator_advance(it, 1), i++)
     {
-        Composable* clipComposable = ComposableVectorIterator_value(it);
-        Clip*       clipValue      = (Clip*) clipComposable;
+        RetainerComposable* clipComposable = ComposableRetainerVectorIterator_value(it);
+        Clip* clipValue = (Clip*) clipComposable;
         EXPECT_STREQ(name_list[i], Clip_name(clipValue));
         errorStatus = OTIOErrorStatus_create();
 
@@ -611,11 +611,11 @@ TEST_F(OTIOItemTests, VisibleRangeTest)
     visible_range_3 = NULL;
     TimeRange_destroy(visible_range_4);
     visible_range_4 = NULL;
-    ComposableVectorIterator_destroy(it);
+    ComposableRetainerVectorIterator_destroy(it);
     it = NULL;
-    ComposableVectorIterator_destroy(itEnd);
+    ComposableRetainerVectorIterator_destroy(itEnd);
     itEnd = NULL;
-    ComposableVector_destroy(clipVector);
+    ComposableRetainerVector_destroy(clipVector);
     clipVector = NULL;
     OTIO_RELEASE(timeline);
     timeline = NULL;
