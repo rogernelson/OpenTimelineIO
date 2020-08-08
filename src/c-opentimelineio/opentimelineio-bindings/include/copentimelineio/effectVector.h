@@ -36,10 +36,6 @@ extern "C"
         EffectVectorIterator* first,
         EffectVectorIterator* last);
     void EffectVectorIterator_advance(EffectVectorIterator* iter, int dist);
-    EffectVectorIterator*
-    EffectVectorIterator_next(EffectVectorIterator* iter, int dist);
-    EffectVectorIterator*
-            EffectVectorIterator_prev(EffectVectorIterator* iter, int dist);
     Effect* EffectVectorIterator_value(EffectVectorIterator* iter);
     bool   EffectVectorIterator_equal(
           EffectVectorIterator* lhs, EffectVectorIterator* rhs);

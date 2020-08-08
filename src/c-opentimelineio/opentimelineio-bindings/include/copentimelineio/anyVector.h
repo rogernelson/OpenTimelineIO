@@ -35,10 +35,6 @@ extern "C"
     AnyVectorIterator* AnyVector_erase_range(
         AnyVector* self, AnyVectorIterator* first, AnyVectorIterator* last);
     void AnyVectorIterator_advance(AnyVectorIterator* iter, int dist);
-    AnyVectorIterator*
-    AnyVectorIterator_next(AnyVectorIterator* iter, int dist);
-    AnyVectorIterator*
-    AnyVectorIterator_prev(AnyVectorIterator* iter, int dist);
     Any* AnyVectorIterator_value(AnyVectorIterator* iter);
     bool
     AnyVectorIterator_equal(AnyVectorIterator* lhs, AnyVectorIterator* rhs);

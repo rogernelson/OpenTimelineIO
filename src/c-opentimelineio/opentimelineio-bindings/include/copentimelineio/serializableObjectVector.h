@@ -45,10 +45,6 @@ OTIO_API SerializableObjectVectorIterator* SerializableObjectVector_erase_range(
     SerializableObjectVectorIterator* last);
 OTIO_API void SerializableObjectVectorIterator_advance(
     SerializableObjectVectorIterator* iter, int dist);
-OTIO_API SerializableObjectVectorIterator* SerializableObjectVectorIterator_next(
-    SerializableObjectVectorIterator* iter, int dist);
-OTIO_API SerializableObjectVectorIterator* SerializableObjectVectorIterator_prev(
-    SerializableObjectVectorIterator* iter, int dist);
 OTIO_API OTIOSerializableObject* SerializableObjectVectorIterator_value(
     SerializableObjectVectorIterator* iter);
 OTIO_API bool SerializableObjectVectorIterator_equal(

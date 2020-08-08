@@ -35,7 +35,7 @@ extern "C"
             new OTIO_NS::ExternalReference(
                 target_url_str, timeRangeOptional, metadataDictionary));
     }
-    const char* ExternalReference_target_url(ExternalReference* self)
+    char* ExternalReference_target_url(ExternalReference* self)
     {
         std::string returnStr =
             reinterpret_cast<OTIO_NS::ExternalReference*>(self)->target_url();
@@ -63,7 +63,7 @@ extern "C"
     {
         return MediaReference_is_missing_reference((MediaReference*) self);
     }
-    const char* ExternalReference_name(ExternalReference* self)
+    char* ExternalReference_name(ExternalReference* self)
     {
         return SerializableObjectWithMetadata_name(
             (SerializableObjectWithMetadata*) self);
@@ -88,7 +88,7 @@ extern "C"
         return SerializableObject_to_json_file(
             reinterpret_cast<OTIOSerializableObject*>(self), file_name, error_status, indent);
     }
-    const char* ExternalReference_to_json_string(
+    char* ExternalReference_to_json_string(
         ExternalReference* self, OTIOErrorStatus* error_status, int indent)
     {
         return SerializableObject_to_json_string(
@@ -106,7 +106,7 @@ extern "C"
         return (ExternalReference*) SerializableObject_clone(
             reinterpret_cast<OTIOSerializableObject*>(self), error_status);
     }
-    const char* ExternalReference_schema_name(ExternalReference* self)
+    char* ExternalReference_schema_name(ExternalReference* self)
     {
         return SerializableObject_schema_name(reinterpret_cast<OTIOSerializableObject*>(self));
     }

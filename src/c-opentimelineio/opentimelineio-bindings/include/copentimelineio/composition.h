@@ -30,7 +30,7 @@ extern "C"
         AnyDictionary* metadata,
         EffectVector*  effects,
         MarkerVector*  markers);
-    const char*               Composition_composition_kind(Composition* self);
+    char*               Composition_composition_kind(Composition* self);
     ComposableRetainerVector* Composition_children(Composition* self);
     void                      Composition_clear_children(Composition* self);
     bool                      Composition_set_children(
@@ -98,7 +98,7 @@ extern "C"
         Item*            to_item,
         OTIOErrorStatus* error_status);
     Composition*   Composition_parent(Composition* self);
-    const char*    Composition_name(Composition* self);
+    char*    Composition_name(Composition* self);
     AnyDictionary* Composition_metadata(Composition* self);
     void           Composition_set_name(Composition* self, const char* name);
     bool           Composition_to_json_file(
@@ -106,13 +106,13 @@ extern "C"
                  const char*      file_name,
                  OTIOErrorStatus* error_status,
                  int              indent);
-    const char* Composition_to_json_string(
+    char* Composition_to_json_string(
         Composition* self, OTIOErrorStatus* error_status, int indent);
     bool
     Composition_is_equivalent_to(Composition* self, OTIOSerializableObject* other);
     Composition*
                 Composition_clone(Composition* self, OTIOErrorStatus* error_status);
-    const char* Composition_schema_name(Composition* self);
+    char* Composition_schema_name(Composition* self);
     int         Composition_schema_version(Composition* self);
 #ifdef __cplusplus
 }

@@ -39,10 +39,6 @@ OTIO_API ComposableVectorIterator* ComposableVector_erase_range(
     ComposableVectorIterator* first,
     ComposableVectorIterator* last);
 OTIO_API void ComposableVectorIterator_advance(ComposableVectorIterator* iter, int dist);
-OTIO_API ComposableVectorIterator*
-            ComposableVectorIterator_next(ComposableVectorIterator* iter, int dist);
-OTIO_API ComposableVectorIterator*
-            ComposableVectorIterator_prev(ComposableVectorIterator* iter, int dist);
 OTIO_API Composable* ComposableVectorIterator_value(ComposableVectorIterator* iter);
 OTIO_API bool       ComposableVectorIterator_equal(
           ComposableVectorIterator* lhs, ComposableVectorIterator* rhs);

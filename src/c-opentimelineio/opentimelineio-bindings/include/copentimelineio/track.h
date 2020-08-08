@@ -44,14 +44,14 @@ OTIO_API bool Track_is_equivalent_to(Track* self, OTIOSerializableObject* other)
 OTIO_API bool Track_visible(Track* self);
 OTIO_API bool Track_overlapping(Track* self);
 
-OTIO_API const char*    Track_name(Track* self);
+OTIO_API char*    Track_name(Track* self);
 OTIO_API void           Track_set_name(Track* self, const char* name);
 OTIO_API AnyDictionary* Track_metadata(Track* self);
-OTIO_API const char*    Track_schema_name(Track* self);
+OTIO_API char*    Track_schema_name(Track* self);
 OTIO_API int            Track_schema_version(Track* self);
-OTIO_API const char*    Track_kind(Track* self);
+OTIO_API char*    Track_kind(Track* self);
 OTIO_API void           Track_set_kind(Track* self, const char* kind);
-OTIO_API const char*    Track_composition_kind(Track* self);
+OTIO_API char*    Track_composition_kind(Track* self);
 
 OTIO_API EffectRetainerVector*     Track_effects(Track* self);
 OTIO_API MarkerRetainerVector*     Track_markers(Track* self);
@@ -121,5 +121,5 @@ OTIO_API bool          Track_to_json_file(
              OTIOErrorStatus* error_status,
              int              indent);
 
-OTIO_API const char* Track_to_json_string(Track* self, OTIOErrorStatus* error_status, int indent);
+OTIO_API char* Track_to_json_string(Track* self, OTIOErrorStatus* error_status, int indent);
 

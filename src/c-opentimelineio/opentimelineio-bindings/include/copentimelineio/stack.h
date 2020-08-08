@@ -37,7 +37,7 @@ OTIO_API TimeRange*
 OTIO_API MapComposableTimeRange*
     Stack_range_of_all_children(Stack* self, OTIOErrorStatus* error_status);
 
-OTIO_API const char*               Stack_composition_kind(Stack* self);
+OTIO_API char*               Stack_composition_kind(Stack* self);
 OTIO_API ComposableRetainerVector* Stack_children(Stack* self);
 OTIO_API void                      Stack_clear_children(Stack* self);
 OTIO_API bool                     Stack_set_children(
@@ -90,7 +90,7 @@ OTIO_API TimeRange* Stack_transformed_time_range(
     Item*            to_item,
     OTIOErrorStatus* error_status);
 OTIO_API Composition*   Stack_parent(Stack* self);
-OTIO_API const char*    Stack_name(Stack* self);
+OTIO_API char*    Stack_name(Stack* self);
 OTIO_API AnyDictionary* Stack_metadata(Stack* self);
 OTIO_API void           Stack_set_name(Stack* self, const char* name);
 OTIO_API bool          Stack_to_json_file(
@@ -98,9 +98,9 @@ OTIO_API bool          Stack_to_json_file(
              const char*      file_name,
              OTIOErrorStatus* error_status,
              int              indent);
-OTIO_API const char* Stack_to_json_string(
+OTIO_API char* Stack_to_json_string(
     Stack* self, OTIOErrorStatus* error_status, int indent);
 OTIO_API bool       Stack_is_equivalent_to(Stack* self, OTIOSerializableObject* other);
 OTIO_API Stack*      Stack_clone(Stack* self, OTIOErrorStatus* error_status);
-OTIO_API const char* Stack_schema_name(Stack* self);
+OTIO_API char* Stack_schema_name(Stack* self);
 OTIO_API int         Stack_schema_version(Stack* self);

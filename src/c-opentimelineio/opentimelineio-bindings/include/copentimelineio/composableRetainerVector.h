@@ -47,10 +47,6 @@ extern "C"
         ComposableRetainerVectorIterator* last);
     void ComposableRetainerVectorIterator_advance(
         ComposableRetainerVectorIterator* iter, int dist);
-    ComposableRetainerVectorIterator* ComposableRetainerVectorIterator_next(
-        ComposableRetainerVectorIterator* iter, int dist);
-    ComposableRetainerVectorIterator* ComposableRetainerVectorIterator_prev(
-        ComposableRetainerVectorIterator* iter, int dist);
     RetainerComposable* ComposableRetainerVectorIterator_value(
         ComposableRetainerVectorIterator* iter);
     bool ComposableRetainerVectorIterator_equal(

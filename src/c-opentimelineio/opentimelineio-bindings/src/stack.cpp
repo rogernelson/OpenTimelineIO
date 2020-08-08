@@ -89,7 +89,7 @@ Stack_range_of_all_children(Stack* self, OTIOErrorStatus* error_status)
             reinterpret_cast<OTIO_NS::ErrorStatus*>(error_status));
     return reinterpret_cast<MapComposableTimeRange*>(new MapDef(mapDef));
 }
-OTIO_API const char* Stack_composition_kind(Stack* self)
+OTIO_API char* Stack_composition_kind(Stack* self)
 {
     return Composition_composition_kind((Composition*) self);
 }
@@ -235,7 +235,7 @@ OTIO_API Composition* Stack_parent(Stack* self)
 {
     return Composition_parent((Composition*) self);
 }
-OTIO_API const char* Stack_name(Stack* self)
+OTIO_API char* Stack_name(Stack* self)
 {
     return Composition_name((Composition*) self);
 }
@@ -257,7 +257,7 @@ OTIO_API bool Stack_to_json_file(
     return Composition_to_json_file(
         (Composition*) self, file_name, error_status, indent);
 }
-OTIO_API const char*
+OTIO_API char*
 Stack_to_json_string(Stack* self, OTIOErrorStatus* error_status, int indent)
 {
     return Composition_to_json_string(
@@ -271,7 +271,7 @@ OTIO_API Stack* Stack_clone(Stack* self, OTIOErrorStatus* error_status)
 {
     return (Stack*) Composition_clone((Composition*) self, error_status);
 }
-OTIO_API const char* Stack_schema_name(Stack* self)
+OTIO_API char* Stack_schema_name(Stack* self)
 {
     return Composition_schema_name((Composition*) self);
 }

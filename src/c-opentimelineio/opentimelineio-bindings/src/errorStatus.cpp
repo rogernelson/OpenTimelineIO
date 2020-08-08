@@ -27,7 +27,7 @@ OTIOErrorStatus_create_with_outcome_details_serializable_object(
         reinterpret_cast<OTIO_NS::SerializableObject*>(object)));
 }
 
-OTIO_API const char*
+OTIO_API char*
 OTIOErrorStatus_outcome_to_string(OTIO_ErrorStatus_Outcome var1)
 {
     std::string returnStr = OTIO_NS::ErrorStatus::outcome_to_string(

@@ -139,7 +139,7 @@ extern "C"
     {
         return Composable_parent((Composable*) self);
     }
-    const char* Gap_name(Gap* self)
+    char* Gap_name(Gap* self)
     {
         return Composable_name((Composable*) self);
     }
@@ -161,7 +161,7 @@ extern "C"
         return Composable_to_json_file(
             (Composable*) self, file_name, error_status, indent);
     }
-    const char*
+    char*
     Gap_to_json_string(Gap* self, OTIOErrorStatus* error_status, int indent)
     {
         return Composable_to_json_string(
@@ -175,7 +175,7 @@ extern "C"
     {
         return (Gap*) Composable_clone((Composable*) self, error_status);
     }
-    const char* Gap_schema_name(Gap* self)
+    char* Gap_schema_name(Gap* self)
     {
         return Composable_schema_name((Composable*) self);
     }

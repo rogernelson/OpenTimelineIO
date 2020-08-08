@@ -29,7 +29,7 @@ extern "C"
     {
         LinearTimeWarp_set_time_scalar((LinearTimeWarp*) self, time_scalar);
     }
-    const char* FreezeFrame_effect_name(FreezeFrame* self)
+    char* FreezeFrame_effect_name(FreezeFrame* self)
     {
         return Effect_effect_name((Effect*) self);
     }
@@ -37,7 +37,7 @@ extern "C"
     {
         Effect_set_effect_name((Effect*) self, effect_name);
     }
-    const char* FreezeFrame_name(FreezeFrame* self)
+    char* FreezeFrame_name(FreezeFrame* self)
     {
         return Effect_name((Effect*) self);
     }
@@ -59,7 +59,7 @@ extern "C"
         return Effect_to_json_file(
             (Effect*) self, file_name, error_status, indent);
     }
-    const char* FreezeFrame_to_json_string(
+    char* FreezeFrame_to_json_string(
         FreezeFrame* self, OTIOErrorStatus* error_status, int indent)
     {
         return Effect_to_json_string((Effect*) self, error_status, indent);
@@ -74,7 +74,7 @@ extern "C"
     {
         return (FreezeFrame*) Effect_clone((Effect*) self, error_status);
     }
-    const char* FreezeFrame_schema_name(FreezeFrame* self)
+    char* FreezeFrame_schema_name(FreezeFrame* self)
     {
         return Effect_schema_name((Effect*) self);
     }

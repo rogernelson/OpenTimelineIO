@@ -8,7 +8,7 @@
 extern "C"
 {
 #endif
-    const char* serialize_json_to_string(
+    char* serialize_json_to_string(
         Any* value, OTIOErrorStatus* error_status, int indent = 4);
     bool serialize_json_to_file(
         Any*             value,

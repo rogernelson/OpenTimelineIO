@@ -36,10 +36,6 @@ extern "C"
         MarkerVectorIterator* first,
         MarkerVectorIterator* last);
     void MarkerVectorIterator_advance(MarkerVectorIterator* iter, int dist);
-    MarkerVectorIterator*
-    MarkerVectorIterator_next(MarkerVectorIterator* iter, int dist);
-    MarkerVectorIterator*
-            MarkerVectorIterator_prev(MarkerVectorIterator* iter, int dist);
     Marker* MarkerVectorIterator_value(MarkerVectorIterator* iter);
     bool    MarkerVectorIterator_equal(
           MarkerVectorIterator* lhs, MarkerVectorIterator* rhs);

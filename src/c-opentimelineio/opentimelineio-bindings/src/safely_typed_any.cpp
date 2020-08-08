@@ -103,7 +103,7 @@ OTIO_API double safely_cast_double_any(Any* a)
     return OTIO_NS::safely_cast_double_any(
         *reinterpret_cast<OTIO_NS::any*>(a));
 }
-OTIO_API const char* safely_cast_string_any(Any* a)
+OTIO_API char* safely_cast_string_any(Any* a)
 {
     std::string returnStr = OTIO_NS::safely_cast_string_any(
         *reinterpret_cast<OTIO_NS::any*>(a));

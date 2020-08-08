@@ -13,7 +13,7 @@ extern "C"
         return reinterpret_cast<UnknownSchema*>(new OTIO_NS::UnknownSchema(
             original_schema_name, original_schema_version));
     }
-    const char* UnknownSchema_original_schema_name(UnknownSchema* self)
+    char* UnknownSchema_original_schema_name(UnknownSchema* self)
     {
         std::string returnStr = reinterpret_cast<OTIO_NS::UnknownSchema*>(self)
                                     ->original_schema_name();
@@ -41,7 +41,7 @@ extern "C"
         return SerializableObject_to_json_file(
             reinterpret_cast<OTIOSerializableObject*>(self), file_name, error_status, indent);
     }
-    const char* UnknownSchema_to_json_string(
+    char* UnknownSchema_to_json_string(
         UnknownSchema* self, OTIOErrorStatus* error_status, int indent)
     {
         return SerializableObject_to_json_string(
@@ -59,7 +59,7 @@ extern "C"
         return (UnknownSchema*) SerializableObject_clone(
             reinterpret_cast<OTIOSerializableObject*>(self), error_status);
     }
-    const char* UnknownSchema_schema_name(UnknownSchema* self)
+    char* UnknownSchema_schema_name(UnknownSchema* self)
     {
         return SerializableObject_schema_name(reinterpret_cast<OTIOSerializableObject*>(self));
     }

@@ -54,7 +54,7 @@ SerializableObject_to_json_file(
             indent);
 }
 
-OTIO_API const char*
+OTIO_API char*
 SerializableObject_to_json_string(
     OTIOSerializableObject* self, OTIOErrorStatus* error_status, int indent)
 {
@@ -123,7 +123,7 @@ SerializableObject_is_unknown_schema(OTIOSerializableObject* self)
         ->is_unknown_schema();
 }
 
-OTIO_API const char*
+OTIO_API char*
 SerializableObject_schema_name(OTIOSerializableObject* self)
 {
     std::string returnStr =

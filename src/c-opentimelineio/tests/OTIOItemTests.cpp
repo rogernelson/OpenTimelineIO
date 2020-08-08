@@ -420,9 +420,9 @@ TEST_F(OTIOItemTests, EffectsTest)
     TimeRange*    tr =
         TimeRange_create_with_start_time_and_duration(start, duration);
 
-    Effect*       effect       = Effect_create(NULL, "blur", NULL);
+    RetainerEffect* effect = Effect_create(NULL, "blur", NULL);
     EffectVector* effectVector = EffectVector_create();
-    EffectVector_push_back(effectVector, effect);
+    EffectVector_push_back(effectVector, RetainerEffect_value(effect));
 
     Item* item = Item_create(NULL, tr, NULL, effectVector, NULL);
     OTIO_RETAIN(item);
@@ -455,6 +455,7 @@ TEST_F(OTIOItemTests, EffectsTest)
     tr = NULL;
     OTIO_RELEASE(item);
     item = NULL;
+    RetainerEffect_managed_destroy(effect);
     EffectVector_destroy(effectVector);
     effectVector = NULL;
 }

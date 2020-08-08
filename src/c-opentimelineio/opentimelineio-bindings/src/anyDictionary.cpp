@@ -91,7 +91,7 @@ OTIO_API void AnyDictionaryIterator_advance(AnyDictionaryIterator* iter, int dis
 {
     std::advance(*reinterpret_cast<DictionaryIterator*>(iter), dist);
 }
-OTIO_API const char* AnyDictionaryIterator_key(AnyDictionaryIterator* iter)
+OTIO_API char* AnyDictionaryIterator_key(AnyDictionaryIterator* iter)
 {
     std::string returnStr =
         (*reinterpret_cast<DictionaryIterator*>(iter))->first;

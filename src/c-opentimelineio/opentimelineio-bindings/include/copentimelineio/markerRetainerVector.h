@@ -44,10 +44,6 @@ extern "C"
         MarkerRetainerVectorIterator* last);
     void MarkerRetainerVectorIterator_advance(
         MarkerRetainerVectorIterator* iter, int dist);
-    MarkerRetainerVectorIterator* MarkerRetainerVectorIterator_next(
-        MarkerRetainerVectorIterator* iter, int dist);
-    MarkerRetainerVectorIterator* MarkerRetainerVectorIterator_prev(
-        MarkerRetainerVectorIterator* iter, int dist);
     RetainerMarker*
          MarkerRetainerVectorIterator_value(MarkerRetainerVectorIterator* iter);
     bool MarkerRetainerVectorIterator_equal(

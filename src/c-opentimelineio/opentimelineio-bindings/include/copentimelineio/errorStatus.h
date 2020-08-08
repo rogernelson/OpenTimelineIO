@@ -48,6 +48,6 @@ OTIO_API OTIOErrorStatus* OTIOErrorStatus_create_with_outcome_details_serializab
     const char*              in_details,
     OTIOSerializableObject*  object);
 
-OTIO_API const char* OTIOErrorStatus_outcome_to_string(OTIO_ErrorStatus_Outcome var1);
+OTIO_API char* OTIOErrorStatus_outcome_to_string(OTIO_ErrorStatus_Outcome var1);
 OTIO_API OTIO_ErrorStatus_Outcome OTIOErrorStatus_get_outcome(OTIOErrorStatus* self);
 OTIO_API void                     OTIOErrorStatus_destroy(OTIOErrorStatus* self);

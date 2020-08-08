@@ -77,7 +77,7 @@ extern "C"
             effectsVector,
             markersVector));
     }
-    const char* Composition_composition_kind(Composition* self)
+    char* Composition_composition_kind(Composition* self)
     {
         std::string returnStr =
             reinterpret_cast<OTIO_NS::Composition*>(self)->composition_kind();
@@ -298,7 +298,7 @@ extern "C"
         return reinterpret_cast<Composition*>(
             reinterpret_cast<OTIO_NS::Composition*>(self)->parent());
     }
-    const char* Composition_name(Composition* self)
+    char* Composition_name(Composition* self)
     {
         return SerializableObjectWithMetadata_name(
             (SerializableObjectWithMetadata*) self);
@@ -323,7 +323,7 @@ extern "C"
         return SerializableObject_to_json_file(
             reinterpret_cast<OTIOSerializableObject*>(self), file_name, error_status, indent);
     }
-    const char* Composition_to_json_string(
+    char* Composition_to_json_string(
         Composition* self, OTIOErrorStatus* error_status, int indent)
     {
         return SerializableObject_to_json_string(
@@ -341,7 +341,7 @@ extern "C"
         return (Composition*) SerializableObject_clone(
             reinterpret_cast<OTIOSerializableObject*>(self), error_status);
     }
-    const char* Composition_schema_name(Composition* self)
+    char* Composition_schema_name(Composition* self)
     {
         return SerializableObject_schema_name(reinterpret_cast<OTIOSerializableObject*>(self));
     }

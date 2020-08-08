@@ -108,7 +108,7 @@ double RationalTime_to_seconds(RationalTime* self)
 {
     return reinterpret_cast<opentime::RationalTime*>(self)->to_seconds();
 }
-const char* RationalTime_to_timecode(
+char* RationalTime_to_timecode(
     RationalTime*            self,
     double                   rate,
     OpenTime_IsDropFrameRate drop_frame,
@@ -123,8 +123,7 @@ const char* RationalTime_to_timecode(
     strcpy(charPtr, returnStr.c_str());
     return charPtr;
 }
-const char* RationalTime_to_timecode_auto(
-    RationalTime* self, OpenTimeErrorStatus* error_status)
+char* RationalTime_to_timecode_auto(RationalTime* self, OpenTimeErrorStatus* error_status)
 {
     std::string returnStr =
         reinterpret_cast<opentime::RationalTime*>(self)->to_timecode(
@@ -133,13 +132,18 @@ const char* RationalTime_to_timecode_auto(
     strcpy(charPtr, returnStr.c_str());
     return charPtr;
 }
-const char* RationalTime_to_time_string(RationalTime* self)
+char* RationalTime_to_time_string(RationalTime* self)
 {
     std::string returnStr =
         reinterpret_cast<opentime::RationalTime*>(self)->to_time_string();
     char* charPtr = (char*) malloc((returnStr.size() + 1) * sizeof(char));
     strcpy(charPtr, returnStr.c_str());
     return charPtr;
+}
+void RationalTime_string_destroy(char* p)
+{
+    if (p)
+        free(p);
 }
 
 RationalTime* RationalTime_add(RationalTime* lhs, RationalTime* rhs)

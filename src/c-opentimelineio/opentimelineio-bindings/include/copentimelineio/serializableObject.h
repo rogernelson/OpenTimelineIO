@@ -27,7 +27,7 @@ OTIO_API bool SerializableObject_to_json_file(
     const char*         file_name,
     OTIOErrorStatus*    error_status,
     int                 indent);
-OTIO_API const char* SerializableObject_to_json_string(
+OTIO_API char* SerializableObject_to_json_string(
     OTIOSerializableObject* self, OTIOErrorStatus* error_status, int indent);
 OTIO_API OTIOSerializableObject* SerializableObject_from_json_file(
     const char* file_name, OTIOErrorStatus* error_status);
@@ -38,9 +38,9 @@ OTIO_API bool SerializableObject_is_equivalent_to(
 OTIO_API OTIOSerializableObject* SerializableObject_clone(
     OTIOSerializableObject* self, OTIOErrorStatus* error_status);
 /*AnyDictionary* SerializableObject_dynamic_fields(OTIOSerializableObject* self);*/
-OTIO_API bool        SerializableObject_is_unknown_schema(OTIOSerializableObject* self);
-OTIO_API const char* SerializableObject_schema_name(OTIOSerializableObject* self);
-OTIO_API int         SerializableObject_schema_version(OTIOSerializableObject* self);
+OTIO_API bool SerializableObject_is_unknown_schema(OTIOSerializableObject* self);
+OTIO_API char* SerializableObject_schema_name(OTIOSerializableObject* self);
+OTIO_API int SerializableObject_schema_version(OTIOSerializableObject* self);
 
 #define OTIO_RETAIN(X) RetainerSerializableObject* X##_r = RetainerSerializableObject_create((OTIOSerializableObject*) (X))
 #define OTIO_RELEASE(X) if (X##_r) { RetainerSerializableObject_managed_destroy(X##_r); X##_r = NULL; }

@@ -39,8 +39,8 @@ TEST_F(OTIOEffectTests, ConstructorTest)
     Any*                   value_any = create_safely_typed_any_string("bar");
     AnyDictionaryIterator* it =
         AnyDictionary_insert(metadata, "foo", value_any);
-    Effect* ef = Effect_create("blur it", "blur", metadata);
-    RetainerSerializableObject* ef_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(ef));
+    RetainerEffect* ef = Effect_create("blur it", "blur", metadata);
+    RetainerSerializableObject* ef_r = RetainerSerializableObject_create(reinterpret_cast<OTIOSerializableObject*>(RetainerEffect_value(ef)));
 
     OTIOErrorStatus* errorStatus = OTIOErrorStatus_create();
 
@@ -105,10 +105,8 @@ TEST_F(OTIOEffectTests, EqTest)
     Any*                   value_any = create_safely_typed_any_string("bar");
     AnyDictionaryIterator* it =
         AnyDictionary_insert(metadata, "foo", value_any);
-    Effect* ef  = Effect_create("blur it", "blur", metadata);
-    Effect* ef2 = Effect_create("blur it", "blur", metadata);
-    OTIO_RETAIN(ef);
-    OTIO_RETAIN(ef2);
+    RetainerEffect* ef  = Effect_create("blur it", "blur", metadata);
+    RetainerEffect* ef2 = Effect_create("blur it", "blur", metadata);
 
     EXPECT_TRUE(SerializableObject_is_equivalent_to(
         reinterpret_cast<OTIOSerializableObject*>(ef), reinterpret_cast<OTIOSerializableObject*>(ef2)));
@@ -119,9 +117,9 @@ TEST_F(OTIOEffectTests, EqTest)
     value_any = NULL;
     AnyDictionary_destroy(metadata);
     metadata = NULL;
-    OTIO_RELEASE(ef);
+    RetainerEffect_managed_destroy(ef);
     ef = NULL;
-    OTIO_RELEASE(ef2);
+    RetainerEffect_managed_destroy(ef2);
     ef2 = NULL;
 }
 

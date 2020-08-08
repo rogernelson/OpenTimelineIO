@@ -66,7 +66,7 @@ OTIO_API Marker* Marker_create(
     return reinterpret_cast<Marker*>(new OTIO_NS::Marker(
         name_str, marked_range_tr, color_str, metdata_dictionary));
 }
-OTIO_API const char* Marker_color(Marker* self)
+OTIO_API char* Marker_color(Marker* self)
 {
     std::string returnStr =
         reinterpret_cast<OTIO_NS::Marker*>(self)->color();
@@ -89,7 +89,7 @@ OTIO_API void Marker_set_marked_range(Marker* self, TimeRange* marked_range)
     reinterpret_cast<OTIO_NS::Marker*>(self)->set_marked_range(
         *reinterpret_cast<OTIO_NS::TimeRange*>(marked_range));
 }
-OTIO_API const char* Marker_name(Marker* self)
+OTIO_API char* Marker_name(Marker* self)
 {
     return SerializableObjectWithMetadata_name(
         (SerializableObjectWithMetadata*) self);
@@ -114,7 +114,7 @@ OTIO_API bool Marker_to_json_file(
     return SerializableObject_to_json_file(
         reinterpret_cast<OTIOSerializableObject*>(self), file_name, error_status, indent);
 }
-OTIO_API const char* Marker_to_json_string(
+OTIO_API char* Marker_to_json_string(
     Marker* self, OTIOErrorStatus* error_status, int indent)
 {
     return SerializableObject_to_json_string(
@@ -130,7 +130,7 @@ OTIO_API Marker* Marker_clone(Marker* self, OTIOErrorStatus* error_status)
     return (Marker*) SerializableObject_clone(
         reinterpret_cast<OTIOSerializableObject*>(self), error_status);
 }
-OTIO_API const char* Marker_schema_name(Marker* self)
+OTIO_API char* Marker_schema_name(Marker* self)
 {
     return SerializableObject_schema_name(reinterpret_cast<OTIOSerializableObject*>(self));
 }

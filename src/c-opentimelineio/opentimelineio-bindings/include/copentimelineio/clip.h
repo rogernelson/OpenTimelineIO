@@ -48,7 +48,7 @@ extern "C"
     bool          Clip_visible(Clip* self);
     bool          Clip_overlapping(Clip* self);
     Composition*   Clip_parent(Clip* self);
-    const char*    Clip_name(Clip* self);
+    char*    Clip_name(Clip* self);
     AnyDictionary* Clip_metadata(Clip* self);
     void           Clip_set_name(Clip* self, const char* name);
     bool          Clip_to_json_file(
@@ -56,11 +56,10 @@ extern "C"
                  const char*      file_name,
                  OTIOErrorStatus* error_status,
                  int              indent);
-    const char*
-                Clip_to_json_string(Clip* self, OTIOErrorStatus* error_status, int indent);
+    char*      Clip_to_json_string(Clip* self, OTIOErrorStatus* error_status, int indent);
     bool       Clip_is_equivalent_to(Clip* self, OTIOSerializableObject* other);
     Clip*       Clip_clone(Clip* self, OTIOErrorStatus* error_status);
-    const char* Clip_schema_name(Clip* self);
+    char* Clip_schema_name(Clip* self);
     int         Clip_schema_version(Clip* self);
 #ifdef __cplusplus
 }

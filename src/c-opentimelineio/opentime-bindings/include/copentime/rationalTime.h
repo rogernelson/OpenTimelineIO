@@ -42,14 +42,15 @@ extern "C"
     int    RationalTime_to_frames(RationalTime* self);
     int    RationalTime_to_frames_with_rate(RationalTime* self, double rate);
     double RationalTime_to_seconds(RationalTime* self);
-    const char* RationalTime_to_timecode(
+    char* RationalTime_to_timecode(
         RationalTime*        self,
         double               rate,
         OpenTime_IsDropFrameRate drop_frame,
         OpenTimeErrorStatus*         error_status);
-    const char* RationalTime_to_timecode_auto(
+    char* RationalTime_to_timecode_auto(
         RationalTime* self, OpenTimeErrorStatus* error_status);
-    const char*   RationalTime_to_time_string(RationalTime* self);
+    char*   RationalTime_to_time_string(RationalTime* self);
+    void RationalTime_string_destroy(char* p);
     RationalTime* RationalTime_add(RationalTime* lhs, RationalTime* rhs);
     RationalTime* RationalTime_subtract(RationalTime* lhs, RationalTime* rhs);
     RationalTime* RationalTime_compare(RationalTime* lhs, RationalTime* rhs);

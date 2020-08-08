@@ -34,11 +34,11 @@ extern "C"
         TimeRange*     marked_range,
         const char*    color,
         AnyDictionary* metadata);
-    const char* Marker_color(Marker* self);
+    char* Marker_color(Marker* self);
     void        Marker_set_color(Marker* self, const char* color);
     TimeRange*  Marker_marked_range(Marker* self);
     void        Marker_set_marked_range(Marker* self, TimeRange* marked_range);
-    const char* Marker_name(Marker* self);
+    char* Marker_name(Marker* self);
     void        Marker_set_name(Marker* self, const char* name);
     AnyDictionary* Marker_metadata(Marker* self);
     bool          Marker_to_json_file(
@@ -46,11 +46,11 @@ extern "C"
                  const char*      file_name,
                  OTIOErrorStatus* error_status,
                  int              indent);
-    const char* Marker_to_json_string(
+    char* Marker_to_json_string(
         Marker* self, OTIOErrorStatus* error_status, int indent);
     bool   Marker_is_equivalent_to(Marker* self, OTIOSerializableObject* other);
     Marker* Marker_clone(Marker* self, OTIOErrorStatus* error_status);
-    const char* Marker_schema_name(Marker* self);
+    char* Marker_schema_name(Marker* self);
     int         Marker_schema_version(Marker* self);
 #ifdef __cplusplus
 }

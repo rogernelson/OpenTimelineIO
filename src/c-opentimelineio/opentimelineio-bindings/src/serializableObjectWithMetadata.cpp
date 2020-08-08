@@ -24,7 +24,7 @@ OTIO_API SerializableObjectWithMetadata* SerializableObjectWithMetadata_create(
         new OTIO_NS::SerializableObjectWithMetadata(
             name_str, metadataDictionary));
 }
-OTIO_API const char*
+OTIO_API char*
 SerializableObjectWithMetadata_name(SerializableObjectWithMetadata* self)
 {
     std::string returnStr =
@@ -59,7 +59,7 @@ OTIO_API bool SerializableObjectWithMetadata_to_json_file(
     return SerializableObject_to_json_file(
         reinterpret_cast<OTIOSerializableObject*>(self), file_name, error_status, indent);
 }
-OTIO_API const char* SerializableObjectWithMetadata_to_json_string(
+OTIO_API char* SerializableObjectWithMetadata_to_json_string(
     SerializableObjectWithMetadata* self,
     OTIOErrorStatus*                error_status,
     int                             indent)
@@ -84,7 +84,7 @@ OTIO_API bool SerializableObjectWithMetadata_is_unknown_schema(
 {
     return SerializableObject_is_unknown_schema(reinterpret_cast<OTIOSerializableObject*>(self));
 }
-OTIO_API const char* SerializableObjectWithMetadata_schema_name(
+OTIO_API char* SerializableObjectWithMetadata_schema_name(
     SerializableObjectWithMetadata* self)
 {
     return SerializableObject_schema_name(reinterpret_cast<OTIOSerializableObject*>(self));

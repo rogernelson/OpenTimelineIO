@@ -20,7 +20,7 @@ OpenTimeErrorStatus* OpenTimeErrorStatus_create_with_outcome_and_details(
         static_cast<opentime::ErrorStatus::Outcome>(in_outcome),
         in_details));
 }
-const char* OpenTimeErrorStatus_outcome_to_string(
+char* OpenTimeErrorStatus_outcome_to_string(
     OpenTimeErrorStatus* self, OpenTime_ErrorStatus_Outcome var1)
 {
     std::string returnStr = opentime::ErrorStatus::outcome_to_string(
