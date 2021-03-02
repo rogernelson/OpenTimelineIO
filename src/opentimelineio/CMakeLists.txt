@@ -5,6 +5,7 @@ set(OPENTIMELINEIO_HEADER_FILES
     any.h
     anyDictionary.h
     anyVector.h
+    bounds.h
     clip.h
     composable.h
     composition.h
@@ -41,6 +42,7 @@ set(OPENTIMELINEIO_HEADER_FILES
     version.h)
 
 add_library(opentimelineio ${OTIO_SHARED_OR_STATIC_LIB} 
+            bounds.cpp
             clip.cpp
             composable.cpp
             composition.cpp
@@ -82,7 +84,7 @@ target_include_directories(opentimelineio PRIVATE
                            "${PROJECT_SOURCE_DIR}/src/deps/optional-lite/include"
                            "${PROJECT_SOURCE_DIR}/src/deps/rapidjson/include")
 
-target_link_libraries(opentimelineio PUBLIC opentime)
+target_link_libraries(opentimelineio PUBLIC opentime Imath::Imath)
 set_target_properties(opentimelineio PROPERTIES
     DEBUG_POSTFIX "${OTIO_DEBUG_POSTFIX}"
     LIBRARY_OUTPUT_NAME "opentimelineio"
@@ -119,7 +121,4 @@ if(OTIO_CXX_INSTALL)
            LIBRARY DESTINATION "${OTIO_RESOLVED_CXX_DYLIB_INSTALL_DIR}"
            RUNTIME DESTINATION "${OTIO_RESOLVED_CXX_DYLIB_INSTALL_DIR}")
 
-    install(EXPORT OpenTimelineIOConfig
-           DESTINATION "${OTIO_RESOLVED_CXX_INSTALL_DIR}"
-           NAMESPACE OTIO:: )
 endif()
